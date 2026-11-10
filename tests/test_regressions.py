@@ -123,6 +123,7 @@ class RegressionTests(unittest.TestCase):
             cfg['tolerances'] = {a: 1000 if a != 'gold_ounce' else 1 for a in primary}
             for s in cfg['sources']:
                 s['enabled'] = True
+                s['adapter'] = 'auto'
                 s['assets'] = ['gold_18k']
                 s['url'] = 'https://example.org/' + s['id']
             cfg_path = Path(directory) / 'sources.json'; cfg_path.write_text(json.dumps(cfg), encoding='utf-8')

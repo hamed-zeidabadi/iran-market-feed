@@ -9,7 +9,7 @@ description = "Open-source Iranian market snapshot with per-source comparisons"
 readme = "README.md"
 requires-python = ">=3.12"
 license = {text = "MIT"}
-dependencies = ["beautifulsoup4==4.14.3", "soupsieve==4.1", "jdatetime==5.2.0", "jalali-core==1.0.0", "tzdata==2026.2"]
+dependencies = ["beautifulsoup4==4.14.3", "soupsieve==4.1", "jdatetime==5.2.0", "jalali-core==1.0.0", "tzdata==2026.2", "websocket-client==1.9.0"]
 
 [project.scripts]
 iran-market-feed = "marketfeed.__main__:main"

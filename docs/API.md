@@ -40,6 +40,8 @@ for (const [asset, value] of Object.entries(feed.prices)) {
 فقط منابع فعال در `sources` هستند؛ هرکدام ساختار ثابت برای تمام هشت قلم دارند، حتی وقتی دادهٔ یک قلم موجود نباشد.
 `is_success` استخراج معتبر است؛ `is_fresh` تازگی، `is_close` نزدیکی به مرجع و `used_in_reference` حضور واقعی در میانه‌اند. این پرچم‌ها مستقل‌اند.
 `reference_eligible: false` اجازهٔ رأی به آن مسیر نمی‌دهد، حتی اگر معتبر و تازه باشد. دادهٔ بدون زمان اعلام نیز رأی ندارد.
+مرجع تتر فقط از `midpoint`های زمان‌دار و هم‌نوع ساخته می‌شود. نرخ `indicative` کانال جدید DollarGold صرفاً برای مقایسه است و `used_in_reference` آن false می‌ماند. صفحه و API نوبیتکس یک group هستند و یک رأی دارند.
+برای منبع WebSocket تبدیل، `http_status` برابر null است؛ وضعیت `parsed` و فیلدهای معتبر هر قلم نتیجهٔ دریافت را نشان می‌دهند. timestamp رویداد منبع در `published_at` است و زمان دریافت جداگانه در `observed_at` باقی می‌ماند.
 `difference = source price - final price` است. برای IRT، `difference_rial = difference × 10`؛ برای USD مقدار آن null است. `is_close` قدرمطلق اختلاف را با آستانهٔ تنظیم‌شده مقایسه می‌کند؛ در نبود قیمت یا مرجع، هر سه فیلد مقایسه null هستند.
 `is_success` یک منبع یعنی دست‌کم یک قلم معتبر استخراج شده است؛ برای بررسی پوشش، وضعیت تک‌تک اقلام را بخوانید.
 منبع قدیمی می‌تواند `is_success: true` ولی `is_fresh: false` و `used_in_reference: false` داشته باشد. نبود داده با مقدار صفر جایگزین نمی‌شود.

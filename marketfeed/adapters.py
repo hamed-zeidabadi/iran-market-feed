@@ -74,6 +74,9 @@ def tgju_message(text, source, fetched, timestamp):
 
 def _extract(body,s,fetched):
     adapter=s['adapter']
+    if adapter in ('tabdeal_depth', 'dollargold'):
+        from .new_sources import tabdeal_depth, dollargold_posts
+        return (tabdeal_depth if adapter=='tabdeal_depth' else dollargold_posts)(body,s,fetched)
     if adapter=='channel':
         soup=BeautifulSoup(body,'html.parser')
         messages=soup.select('.tgme_widget_message_text') or soup.select('div[class*="Text_text"]')

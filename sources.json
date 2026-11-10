@@ -122,6 +122,35 @@
         "coin_quarter",
         "gold_ounce"
       ]
+    },
+    {
+      "id": "tabdeal_usdt",
+      "url": "wss://api1.tabdeal.org/stream/",
+      "group": "tabdeal",
+      "adapter": "tabdeal_depth",
+      "enabled": true,
+      "reference_eligible": true,
+      "assets": [
+        "usdt"
+      ],
+      "kind": "midpoint"
+    },
+    {
+      "id": "telegram_dollargold24",
+      "url": "https://t.me/s/DollarGold_24",
+      "group": "dollargold24",
+      "adapter": "dollargold",
+      "enabled": true,
+      "reference_eligible": false,
+      "assets": [
+        "gold_18k",
+        "coin_bahar",
+        "coin_emami",
+        "coin_half",
+        "coin_quarter",
+        "gold_ounce",
+        "usdt"
+      ]
     }
   ]
 }

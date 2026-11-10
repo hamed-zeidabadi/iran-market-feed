@@ -11,6 +11,7 @@ import time
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlparse
+from websocket import create_connection, WebSocketException
 from .adapters import extract
 from .report import build_report
 
@@ -22,21 +23,53 @@ def atomic_json(path, data):
     os.replace(tmp, path)
 
 
+def read_source(source, timeout):
+    if source['adapter'] == 'tabdeal_depth':
+        from .new_sources import TABDEAL_STREAM
+        # One public spot snapshot per scheduled collection; no persistent stream.
+        deadline = time.monotonic() + timeout
+        connection = create_connection(source['url'], timeout=timeout)
+        try:
+            connection.send(json.dumps({'method': 'SUBSCRIBE', 'params': [TABDEAL_STREAM], 'id': 1}))
+            for _ in range(16):
+                remaining = deadline - time.monotonic()
+                if remaining <= 0:
+                    raise TimeoutError('public depth snapshot timed out')
+                connection.settimeout(remaining)
+                raw = connection.recv()
+                if not raw:
+                    raise ValueError('empty websocket response')
+                raw = raw.encode('utf-8') if isinstance(raw, str) else raw
+                if len(raw) > 2_000_000:
+                    raise ValueError('response too large')
+                payload = json.loads(raw)
+                if not isinstance(payload, dict):
+                    raise ValueError('invalid stream envelope')
+                if 'stream' in payload:
+                    return raw, None
+                if payload != {'result': None, 'id': 1}:
+                    raise ValueError('unexpected subscription response')
+            raise ValueError('no depth snapshot received')
+        finally:
+            connection.close()
+    req = Request(source['url'], headers={
+        'User-Agent': 'IranMarketFeed/0.1 (open-source research collector)',
+        'Accept': 'text/html,application/json',
+    })
+    with urlopen(req, timeout=timeout) as response:
+        raw = response.read(2_000_001)
+        if len(raw) > 2_000_000:
+            raise ValueError('response too large')
+        return raw, response.status
+
+
 def collect(source, timeout, attempts, diagnostics_dir=None):
     started = time.monotonic()
     fetched = datetime.now(timezone.utc).isoformat()
     for attempt in range(attempts):
         try:
-            req = Request(source['url'], headers={
-                'User-Agent': 'IranMarketFeed/0.1 (open-source research collector)',
-                'Accept': 'text/html,application/json',
-            })
-            with urlopen(req, timeout=timeout) as response:
-                http_status = response.status
-                raw = response.read(2_000_001)
-                if len(raw)>2_000_000:
-                    raise ValueError('response too large')
-                body = raw.decode('utf-8-sig')
+            raw, http_status = read_source(source, timeout)
+            body = raw.decode('utf-8-sig')
             if diagnostics_dir:
                 directory = Path(diagnostics_dir)
                 directory.mkdir(parents=True, exist_ok=True)
@@ -49,7 +82,7 @@ def collect(source, timeout, attempts, diagnostics_dir=None):
                 'http_status': http_status,
                 'body_sha256': hashlib.sha256(raw).hexdigest(),
                 'note': 'parsed does not imply fresh or independent'}
-        except (HTTPError, URLError, TimeoutError, OSError, ValueError) as exc:
+        except (HTTPError, URLError, TimeoutError, OSError, ValueError, WebSocketException) as exc:
             retryable = (isinstance(exc, HTTPError) and exc.code in (429, 500, 502, 503, 504)) or isinstance(exc, (URLError, TimeoutError, OSError)) and not isinstance(exc, HTTPError)
             if retryable and attempt+1 < attempts:
                 time.sleep(min(2**attempt+random.random(), 5)); continue
@@ -69,7 +102,10 @@ def load_config(path):
         ids.add(s['id'])
         urls.add(s['url'])
         u=urlparse(s.get('url',''))
-        if u.scheme!='https' or not u.hostname or u.username:raise ValueError('HTTPS source required')
+        if not u.hostname or u.username or u.password:raise ValueError('public source URL required')
+        if s['adapter']=='tabdeal_depth':
+            if s['url']!='wss://api1.tabdeal.org/stream/':raise ValueError('documented Tabdeal public spot stream required')
+        elif u.scheme!='https':raise ValueError('HTTPS source required')
         if not s.get('group'):raise ValueError('publisher group required')
         if not isinstance(s.get('enabled'),bool):raise ValueError('enabled must be boolean')
         if not s.get('assets') or not set(s['assets']) <= set(config['primary_assets']):raise ValueError('explicit primary assets required')
