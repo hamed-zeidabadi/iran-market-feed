@@ -1,0 +1,47 @@
+# قرارداد API، نسخهٔ ۲
+
+`GET /api/prices.json` — بدون پارامتر، کلید API یا دیتابیس؛ پاسخ `application/json`.
+
+نمونهٔ کامل فعلی: [../public/api/prices.json](../public/api/prices.json).
+تعریف دقیق تمام فیلدها و نوع‌ها: [prices.schema.json](prices.schema.json).
+این فایل آخرین snapshot است و در هر درخواست دوباره از منابع دریافت نمی‌شود.
+
+```js
+const response = await fetch('/api/prices.json');
+if (!response.ok) throw new Error(`HTTP ${response.status}`);
+const feed = await response.json();
+console.log(feed.date, feed.time, feed.datetime, feed.timestamp, feed.timezone);
+for (const [asset, value] of Object.entries(feed.prices)) {
+  console.log(asset, value.price, value.currency, value.unit, value.status);
+}
+```
+
+در استفاده بین دو دامنه، نشانی کامل GitHub Pages را جایگزین کنید. همچنین سن `datetime` و زمان اعلام `published_at`، وضعیت و تعداد ناشران هر قلم را بررسی کنید.
+
+## ساعت خروجی
+
+- `date`: شمسی به وقت ایران، `YYYY/MM/DD`.
+- `time`: ساعت ایران، `HH:mm`.
+- `datetime`: همان لحظه در UTC، ISO 8601 با `Z`.
+- `timestamp`: همان لحظه، عدد صحیح Unix بر حسب ثانیه.
+- `timezone`: مقدار ثابت `Asia/Tehran`.
+
+این پنج فیلد از یک لحظهٔ پایان اجرا ساخته می‌شوند. `published_at` و `observed_at` هر قلم مستقل‌اند؛ زمان‌های منبع در خروجی به UTC نرمال می‌شوند.
+`published_at` در قیمت نهایی جدیدترین زمان اعلام بین مشارکت‌کنندگان است؛ برای مشاهدهٔ زمان تک‌تک آن‌ها به `sources` مراجعه کنید. زمان قدیمی‌ترین مشارکت‌کننده را نباید از این فیلد استنتاج کرد.
+
+## قیمت‌ها و واحدها
+
+تمام هشت کلید همیشه حاضرند. طلا و نقره: `IRT/gram` با عیار `750` و `999`؛ چهار نوع سکه: `IRT/coin`؛ اونس: `USD/troy_ounce`؛ تتر: `IRT/USDT`.
+`quote_type` برای تتر `midpoint` و برای نرخ‌های تابلو `indicative` است. `price` عدد JSON یا `null` است. `direction` به‌دلیل نبود تاریخچه همیشه `null` است.
+`status` یکی از `ok`، `provisional`، `disputed` و `unavailable` است؛ دو وضعیت اول تعداد شواهد را بیان می‌کنند و اختلاف بیش از ۲٪ وضعیت را به `disputed` تبدیل می‌کند. برای disputed هم میانه منتشر می‌شود؛ برای unavailable قیمت null است.
+
+## منابع
+
+فقط منابع فعال در `sources` هستند؛ هرکدام ساختار ثابت برای تمام هشت قلم دارند، حتی وقتی دادهٔ یک قلم موجود نباشد.
+`is_success` استخراج معتبر است؛ `is_fresh` تازگی، `is_close` نزدیکی به مرجع و `used_in_reference` حضور واقعی در میانه‌اند. این پرچم‌ها مستقل‌اند.
+`reference_eligible: false` اجازهٔ رأی به آن مسیر نمی‌دهد، حتی اگر معتبر و تازه باشد. دادهٔ بدون زمان اعلام نیز رأی ندارد.
+`difference = source price - final price` است. برای IRT، `difference_rial = difference × 10`؛ برای USD مقدار آن null است. `is_close` قدرمطلق اختلاف را با آستانهٔ تنظیم‌شده مقایسه می‌کند؛ در نبود قیمت یا مرجع، هر سه فیلد مقایسه null هستند.
+`is_success` یک منبع یعنی دست‌کم یک قلم معتبر استخراج شده است؛ برای بررسی پوشش، وضعیت تک‌تک اقلام را بخوانید.
+منبع قدیمی می‌تواند `is_success: true` ولی `is_fresh: false` و `used_in_reference: false` داشته باشد. نبود داده با مقدار صفر جایگزین نمی‌شود.
+
+نسخهٔ ۲ به‌جای `updated_at` و `updated_at_tehran` از قرارداد پنج‌فیلدی بالا استفاده می‌کند؛ مصرف‌کنندگان نسخهٔ قبلی باید مهاجرت کنند.

@@ -1,0 +1,1734 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:iran-market-feed:prices:v2",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": 2
+    },
+    "date": {
+      "type": "string",
+      "pattern": "^\\d{4}/\\d{2}/\\d{2}$"
+    },
+    "time": {
+      "type": "string",
+      "pattern": "^\\d{2}:\\d{2}$"
+    },
+    "datetime": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "Z$"
+    },
+    "timestamp": {
+      "type": "integer"
+    },
+    "timezone": {
+      "const": "Asia/Tehran"
+    },
+    "refresh_interval_seconds": {
+      "const": 1800
+    },
+    "method": {
+      "const": "median_one_vote_per_publisher"
+    },
+    "prices": {
+      "type": "object",
+      "properties": {
+        "gold_18k": {
+          "type": "object",
+          "properties": {
+            "label": {
+              "type": "string"
+            },
+            "price": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "exclusiveMinimum": 0
+            },
+            "currency": {
+              "const": "IRT"
+            },
+            "unit": {
+              "const": "gram"
+            },
+            "purity": {
+              "const": "750"
+            },
+            "quote_type": {
+              "const": "indicative"
+            },
+            "status": {
+              "enum": [
+                "ok",
+                "provisional",
+                "disputed",
+                "unavailable"
+              ]
+            },
+            "direction": {
+              "type": "null"
+            },
+            "source_count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "published_at": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date-time"
+            },
+            "observed_at": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date-time"
+            },
+            "uses_observed_time": {
+              "const": false
+            },
+            "spread_percent": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "tolerance": {
+              "type": "number",
+              "minimum": 0
+            },
+            "contributors": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "uniqueItems": true
+            }
+          },
+          "required": [
+            "label",
+            "price",
+            "currency",
+            "unit",
+            "purity",
+            "quote_type",
+            "status",
+            "direction",
+            "source_count",
+            "published_at",
+            "observed_at",
+            "uses_observed_time",
+            "spread_percent",
+            "tolerance",
+            "contributors"
+          ],
+          "additionalProperties": false
+        },
+        "silver_999": {
+          "type": "object",
+          "properties": {
+            "label": {
+              "type": "string"
+            },
+            "price": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "exclusiveMinimum": 0
+            },
+            "currency": {
+              "const": "IRT"
+            },
+            "unit": {
+              "const": "gram"
+            },
+            "purity": {
+              "const": "999"
+            },
+            "quote_type": {
+              "const": "indicative"
+            },
+            "status": {
+              "enum": [
+                "ok",
+                "provisional",
+                "disputed",
+                "unavailable"
+              ]
+            },
+            "direction": {
+              "type": "null"
+            },
+            "source_count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "published_at": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date-time"
+            },
+            "observed_at": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date-time"
+            },
+            "uses_observed_time": {
+              "const": false
+            },
+            "spread_percent": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "tolerance": {
+              "type": "number",
+              "minimum": 0
+            },
+            "contributors": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "uniqueItems": true
+            }
+          },
+          "required": [
+            "label",
+            "price",
+            "currency",
+            "unit",
+            "purity",
+            "quote_type",
+            "status",
+            "direction",
+            "source_count",
+            "published_at",
+            "observed_at",
+            "uses_observed_time",
+            "spread_percent",
+            "tolerance",
+            "contributors"
+          ],
+          "additionalProperties": false
+        },
+        "coin_bahar": {
+          "type": "object",
+          "properties": {
+            "label": {
+              "type": "string"
+            },
+            "price": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "exclusiveMinimum": 0
+            },
+            "currency": {
+              "const": "IRT"
+            },
+            "unit": {
+              "const": "coin"
+            },
+            "purity": {
+              "const": null
+            },
+            "quote_type": {
+              "const": "indicative"
+            },
+            "status": {
+              "enum": [
+                "ok",
+                "provisional",
+                "disputed",
+                "unavailable"
+              ]
+            },
+            "direction": {
+              "type": "null"
+            },
+            "source_count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "published_at": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date-time"
+            },
+            "observed_at": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date-time"
+            },
+            "uses_observed_time": {
+              "const": false
+            },
+            "spread_percent": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "tolerance": {
+              "type": "number",
+              "minimum": 0
+            },
+            "contributors": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "uniqueItems": true
+            }
+          },
+          "required": [
+            "label",
+            "price",
+            "currency",
+            "unit",
+            "purity",
+            "quote_type",
+            "status",
+            "direction",
+            "source_count",
+            "published_at",
+            "observed_at",
+            "uses_observed_time",
+            "spread_percent",
+            "tolerance",
+            "contributors"
+          ],
+          "additionalProperties": false
+        },
+        "coin_emami": {
+          "type": "object",
+          "properties": {
+            "label": {
+              "type": "string"
+            },
+            "price": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "exclusiveMinimum": 0
+            },
+            "currency": {
+              "const": "IRT"
+            },
+            "unit": {
+              "const": "coin"
+            },
+            "purity": {
+              "const": null
+            },
+            "quote_type": {
+              "const": "indicative"
+            },
+            "status": {
+              "enum": [
+                "ok",
+                "provisional",
+                "disputed",
+                "unavailable"
+              ]
+            },
+            "direction": {
+              "type": "null"
+            },
+            "source_count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "published_at": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date-time"
+            },
+            "observed_at": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date-time"
+            },
+            "uses_observed_time": {
+              "const": false
+            },
+            "spread_percent": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "tolerance": {
+              "type": "number",
+              "minimum": 0
+            },
+            "contributors": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "uniqueItems": true
+            }
+          },
+          "required": [
+            "label",
+            "price",
+            "currency",
+            "unit",
+            "purity",
+            "quote_type",
+            "status",
+            "direction",
+            "source_count",
+            "published_at",
+            "observed_at",
+            "uses_observed_time",
+            "spread_percent",
+            "tolerance",
+            "contributors"
+          ],
+          "additionalProperties": false
+        },
+        "coin_half": {
+          "type": "object",
+          "properties": {
+            "label": {
+              "type": "string"
+            },
+            "price": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "exclusiveMinimum": 0
+            },
+            "currency": {
+              "const": "IRT"
+            },
+            "unit": {
+              "const": "coin"
+            },
+            "purity": {
+              "const": null
+            },
+            "quote_type": {
+              "const": "indicative"
+            },
+            "status": {
+              "enum": [
+                "ok",
+                "provisional",
+                "disputed",
+                "unavailable"
+              ]
+            },
+            "direction": {
+              "type": "null"
+            },
+            "source_count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "published_at": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date-time"
+            },
+            "observed_at": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date-time"
+            },
+            "uses_observed_time": {
+              "const": false
+            },
+            "spread_percent": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "tolerance": {
+              "type": "number",
+              "minimum": 0
+            },
+            "contributors": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "uniqueItems": true
+            }
+          },
+          "required": [
+            "label",
+            "price",
+            "currency",
+            "unit",
+            "purity",
+            "quote_type",
+            "status",
+            "direction",
+            "source_count",
+            "published_at",
+            "observed_at",
+            "uses_observed_time",
+            "spread_percent",
+            "tolerance",
+            "contributors"
+          ],
+          "additionalProperties": false
+        },
+        "coin_quarter": {
+          "type": "object",
+          "properties": {
+            "label": {
+              "type": "string"
+            },
+            "price": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "exclusiveMinimum": 0
+            },
+            "currency": {
+              "const": "IRT"
+            },
+            "unit": {
+              "const": "coin"
+            },
+            "purity": {
+              "const": null
+            },
+            "quote_type": {
+              "const": "indicative"
+            },
+            "status": {
+              "enum": [
+                "ok",
+                "provisional",
+                "disputed",
+                "unavailable"
+              ]
+            },
+            "direction": {
+              "type": "null"
+            },
+            "source_count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "published_at": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date-time"
+            },
+            "observed_at": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date-time"
+            },
+            "uses_observed_time": {
+              "const": false
+            },
+            "spread_percent": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "tolerance": {
+              "type": "number",
+              "minimum": 0
+            },
+            "contributors": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "uniqueItems": true
+            }
+          },
+          "required": [
+            "label",
+            "price",
+            "currency",
+            "unit",
+            "purity",
+            "quote_type",
+            "status",
+            "direction",
+            "source_count",
+            "published_at",
+            "observed_at",
+            "uses_observed_time",
+            "spread_percent",
+            "tolerance",
+            "contributors"
+          ],
+          "additionalProperties": false
+        },
+        "gold_ounce": {
+          "type": "object",
+          "properties": {
+            "label": {
+              "type": "string"
+            },
+            "price": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "exclusiveMinimum": 0
+            },
+            "currency": {
+              "const": "USD"
+            },
+            "unit": {
+              "const": "troy_ounce"
+            },
+            "purity": {
+              "const": null
+            },
+            "quote_type": {
+              "const": "indicative"
+            },
+            "status": {
+              "enum": [
+                "ok",
+                "provisional",
+                "disputed",
+                "unavailable"
+              ]
+            },
+            "direction": {
+              "type": "null"
+            },
+            "source_count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "published_at": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date-time"
+            },
+            "observed_at": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date-time"
+            },
+            "uses_observed_time": {
+              "const": false
+            },
+            "spread_percent": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "tolerance": {
+              "type": "number",
+              "minimum": 0
+            },
+            "contributors": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "uniqueItems": true
+            }
+          },
+          "required": [
+            "label",
+            "price",
+            "currency",
+            "unit",
+            "purity",
+            "quote_type",
+            "status",
+            "direction",
+            "source_count",
+            "published_at",
+            "observed_at",
+            "uses_observed_time",
+            "spread_percent",
+            "tolerance",
+            "contributors"
+          ],
+          "additionalProperties": false
+        },
+        "usdt": {
+          "type": "object",
+          "properties": {
+            "label": {
+              "type": "string"
+            },
+            "price": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "exclusiveMinimum": 0
+            },
+            "currency": {
+              "const": "IRT"
+            },
+            "unit": {
+              "const": "USDT"
+            },
+            "purity": {
+              "const": null
+            },
+            "quote_type": {
+              "const": "midpoint"
+            },
+            "status": {
+              "enum": [
+                "ok",
+                "provisional",
+                "disputed",
+                "unavailable"
+              ]
+            },
+            "direction": {
+              "type": "null"
+            },
+            "source_count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "published_at": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date-time"
+            },
+            "observed_at": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date-time"
+            },
+            "uses_observed_time": {
+              "const": false
+            },
+            "spread_percent": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "tolerance": {
+              "type": "number",
+              "minimum": 0
+            },
+            "contributors": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "uniqueItems": true
+            }
+          },
+          "required": [
+            "label",
+            "price",
+            "currency",
+            "unit",
+            "purity",
+            "quote_type",
+            "status",
+            "direction",
+            "source_count",
+            "published_at",
+            "observed_at",
+            "uses_observed_time",
+            "spread_percent",
+            "tolerance",
+            "contributors"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "gold_18k",
+        "silver_999",
+        "coin_bahar",
+        "coin_emami",
+        "coin_half",
+        "coin_quarter",
+        "gold_ounce",
+        "usdt"
+      ],
+      "additionalProperties": false
+    },
+    "source_summary": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "boolean"
+      }
+    },
+    "source_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "successful_sources": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "sources": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "is_success": {
+            "type": "boolean"
+          },
+          "status": {
+            "enum": [
+              "parsed",
+              "no_quotes",
+              "error",
+              "parser_error",
+              "skipped"
+            ]
+          },
+          "group": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "reference_eligible": {
+            "type": "boolean"
+          },
+          "latency_ms": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "http_status": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "error": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "prices": {
+            "type": "object",
+            "properties": {
+              "gold_18k": {
+                "type": "object",
+                "properties": {
+                  "is_success": {
+                    "type": "boolean"
+                  },
+                  "price": {
+                    "type": [
+                      "number",
+                      "null"
+                    ],
+                    "exclusiveMinimum": 0
+                  },
+                  "currency": {
+                    "const": "IRT"
+                  },
+                  "unit": {
+                    "const": "gram"
+                  },
+                  "purity": {
+                    "const": "750"
+                  },
+                  "quote_type": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "difference": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "difference_rial": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "is_close": {
+                    "type": [
+                      "boolean",
+                      "null"
+                    ]
+                  },
+                  "is_fresh": {
+                    "type": "boolean"
+                  },
+                  "is_usable": {
+                    "type": "boolean"
+                  },
+                  "used_in_reference": {
+                    "type": "boolean"
+                  },
+                  "reason": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "published_at": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "date-time"
+                  },
+                  "observed_at": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "date-time"
+                  },
+                  "time_basis": {
+                    "enum": [
+                      "source",
+                      "unknown",
+                      null
+                    ]
+                  }
+                },
+                "required": [
+                  "is_success",
+                  "price",
+                  "currency",
+                  "unit",
+                  "purity",
+                  "quote_type",
+                  "difference",
+                  "difference_rial",
+                  "is_close",
+                  "is_fresh",
+                  "is_usable",
+                  "used_in_reference",
+                  "reason",
+                  "published_at",
+                  "observed_at",
+                  "time_basis"
+                ],
+                "additionalProperties": false
+              },
+              "silver_999": {
+                "type": "object",
+                "properties": {
+                  "is_success": {
+                    "type": "boolean"
+                  },
+                  "price": {
+                    "type": [
+                      "number",
+                      "null"
+                    ],
+                    "exclusiveMinimum": 0
+                  },
+                  "currency": {
+                    "const": "IRT"
+                  },
+                  "unit": {
+                    "const": "gram"
+                  },
+                  "purity": {
+                    "const": "999"
+                  },
+                  "quote_type": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "difference": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "difference_rial": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "is_close": {
+                    "type": [
+                      "boolean",
+                      "null"
+                    ]
+                  },
+                  "is_fresh": {
+                    "type": "boolean"
+                  },
+                  "is_usable": {
+                    "type": "boolean"
+                  },
+                  "used_in_reference": {
+                    "type": "boolean"
+                  },
+                  "reason": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "published_at": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "date-time"
+                  },
+                  "observed_at": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "date-time"
+                  },
+                  "time_basis": {
+                    "enum": [
+                      "source",
+                      "unknown",
+                      null
+                    ]
+                  }
+                },
+                "required": [
+                  "is_success",
+                  "price",
+                  "currency",
+                  "unit",
+                  "purity",
+                  "quote_type",
+                  "difference",
+                  "difference_rial",
+                  "is_close",
+                  "is_fresh",
+                  "is_usable",
+                  "used_in_reference",
+                  "reason",
+                  "published_at",
+                  "observed_at",
+                  "time_basis"
+                ],
+                "additionalProperties": false
+              },
+              "coin_bahar": {
+                "type": "object",
+                "properties": {
+                  "is_success": {
+                    "type": "boolean"
+                  },
+                  "price": {
+                    "type": [
+                      "number",
+                      "null"
+                    ],
+                    "exclusiveMinimum": 0
+                  },
+                  "currency": {
+                    "const": "IRT"
+                  },
+                  "unit": {
+                    "const": "coin"
+                  },
+                  "purity": {
+                    "const": null
+                  },
+                  "quote_type": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "difference": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "difference_rial": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "is_close": {
+                    "type": [
+                      "boolean",
+                      "null"
+                    ]
+                  },
+                  "is_fresh": {
+                    "type": "boolean"
+                  },
+                  "is_usable": {
+                    "type": "boolean"
+                  },
+                  "used_in_reference": {
+                    "type": "boolean"
+                  },
+                  "reason": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "published_at": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "date-time"
+                  },
+                  "observed_at": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "date-time"
+                  },
+                  "time_basis": {
+                    "enum": [
+                      "source",
+                      "unknown",
+                      null
+                    ]
+                  }
+                },
+                "required": [
+                  "is_success",
+                  "price",
+                  "currency",
+                  "unit",
+                  "purity",
+                  "quote_type",
+                  "difference",
+                  "difference_rial",
+                  "is_close",
+                  "is_fresh",
+                  "is_usable",
+                  "used_in_reference",
+                  "reason",
+                  "published_at",
+                  "observed_at",
+                  "time_basis"
+                ],
+                "additionalProperties": false
+              },
+              "coin_emami": {
+                "type": "object",
+                "properties": {
+                  "is_success": {
+                    "type": "boolean"
+                  },
+                  "price": {
+                    "type": [
+                      "number",
+                      "null"
+                    ],
+                    "exclusiveMinimum": 0
+                  },
+                  "currency": {
+                    "const": "IRT"
+                  },
+                  "unit": {
+                    "const": "coin"
+                  },
+                  "purity": {
+                    "const": null
+                  },
+                  "quote_type": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "difference": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "difference_rial": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "is_close": {
+                    "type": [
+                      "boolean",
+                      "null"
+                    ]
+                  },
+                  "is_fresh": {
+                    "type": "boolean"
+                  },
+                  "is_usable": {
+                    "type": "boolean"
+                  },
+                  "used_in_reference": {
+                    "type": "boolean"
+                  },
+                  "reason": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "published_at": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "date-time"
+                  },
+                  "observed_at": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "date-time"
+                  },
+                  "time_basis": {
+                    "enum": [
+                      "source",
+                      "unknown",
+                      null
+                    ]
+                  }
+                },
+                "required": [
+                  "is_success",
+                  "price",
+                  "currency",
+                  "unit",
+                  "purity",
+                  "quote_type",
+                  "difference",
+                  "difference_rial",
+                  "is_close",
+                  "is_fresh",
+                  "is_usable",
+                  "used_in_reference",
+                  "reason",
+                  "published_at",
+                  "observed_at",
+                  "time_basis"
+                ],
+                "additionalProperties": false
+              },
+              "coin_half": {
+                "type": "object",
+                "properties": {
+                  "is_success": {
+                    "type": "boolean"
+                  },
+                  "price": {
+                    "type": [
+                      "number",
+                      "null"
+                    ],
+                    "exclusiveMinimum": 0
+                  },
+                  "currency": {
+                    "const": "IRT"
+                  },
+                  "unit": {
+                    "const": "coin"
+                  },
+                  "purity": {
+                    "const": null
+                  },
+                  "quote_type": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "difference": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "difference_rial": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "is_close": {
+                    "type": [
+                      "boolean",
+                      "null"
+                    ]
+                  },
+                  "is_fresh": {
+                    "type": "boolean"
+                  },
+                  "is_usable": {
+                    "type": "boolean"
+                  },
+                  "used_in_reference": {
+                    "type": "boolean"
+                  },
+                  "reason": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "published_at": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "date-time"
+                  },
+                  "observed_at": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "date-time"
+                  },
+                  "time_basis": {
+                    "enum": [
+                      "source",
+                      "unknown",
+                      null
+                    ]
+                  }
+                },
+                "required": [
+                  "is_success",
+                  "price",
+                  "currency",
+                  "unit",
+                  "purity",
+                  "quote_type",
+                  "difference",
+                  "difference_rial",
+                  "is_close",
+                  "is_fresh",
+                  "is_usable",
+                  "used_in_reference",
+                  "reason",
+                  "published_at",
+                  "observed_at",
+                  "time_basis"
+                ],
+                "additionalProperties": false
+              },
+              "coin_quarter": {
+                "type": "object",
+                "properties": {
+                  "is_success": {
+                    "type": "boolean"
+                  },
+                  "price": {
+                    "type": [
+                      "number",
+                      "null"
+                    ],
+                    "exclusiveMinimum": 0
+                  },
+                  "currency": {
+                    "const": "IRT"
+                  },
+                  "unit": {
+                    "const": "coin"
+                  },
+                  "purity": {
+                    "const": null
+                  },
+                  "quote_type": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "difference": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "difference_rial": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "is_close": {
+                    "type": [
+                      "boolean",
+                      "null"
+                    ]
+                  },
+                  "is_fresh": {
+                    "type": "boolean"
+                  },
+                  "is_usable": {
+                    "type": "boolean"
+                  },
+                  "used_in_reference": {
+                    "type": "boolean"
+                  },
+                  "reason": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "published_at": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "date-time"
+                  },
+                  "observed_at": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "date-time"
+                  },
+                  "time_basis": {
+                    "enum": [
+                      "source",
+                      "unknown",
+                      null
+                    ]
+                  }
+                },
+                "required": [
+                  "is_success",
+                  "price",
+                  "currency",
+                  "unit",
+                  "purity",
+                  "quote_type",
+                  "difference",
+                  "difference_rial",
+                  "is_close",
+                  "is_fresh",
+                  "is_usable",
+                  "used_in_reference",
+                  "reason",
+                  "published_at",
+                  "observed_at",
+                  "time_basis"
+                ],
+                "additionalProperties": false
+              },
+              "gold_ounce": {
+                "type": "object",
+                "properties": {
+                  "is_success": {
+                    "type": "boolean"
+                  },
+                  "price": {
+                    "type": [
+                      "number",
+                      "null"
+                    ],
+                    "exclusiveMinimum": 0
+                  },
+                  "currency": {
+                    "const": "USD"
+                  },
+                  "unit": {
+                    "const": "troy_ounce"
+                  },
+                  "purity": {
+                    "const": null
+                  },
+                  "quote_type": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "difference": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "difference_rial": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "is_close": {
+                    "type": [
+                      "boolean",
+                      "null"
+                    ]
+                  },
+                  "is_fresh": {
+                    "type": "boolean"
+                  },
+                  "is_usable": {
+                    "type": "boolean"
+                  },
+                  "used_in_reference": {
+                    "type": "boolean"
+                  },
+                  "reason": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "published_at": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "date-time"
+                  },
+                  "observed_at": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "date-time"
+                  },
+                  "time_basis": {
+                    "enum": [
+                      "source",
+                      "unknown",
+                      null
+                    ]
+                  }
+                },
+                "required": [
+                  "is_success",
+                  "price",
+                  "currency",
+                  "unit",
+                  "purity",
+                  "quote_type",
+                  "difference",
+                  "difference_rial",
+                  "is_close",
+                  "is_fresh",
+                  "is_usable",
+                  "used_in_reference",
+                  "reason",
+                  "published_at",
+                  "observed_at",
+                  "time_basis"
+                ],
+                "additionalProperties": false
+              },
+              "usdt": {
+                "type": "object",
+                "properties": {
+                  "is_success": {
+                    "type": "boolean"
+                  },
+                  "price": {
+                    "type": [
+                      "number",
+                      "null"
+                    ],
+                    "exclusiveMinimum": 0
+                  },
+                  "currency": {
+                    "const": "IRT"
+                  },
+                  "unit": {
+                    "const": "USDT"
+                  },
+                  "purity": {
+                    "const": null
+                  },
+                  "quote_type": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "difference": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "difference_rial": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "is_close": {
+                    "type": [
+                      "boolean",
+                      "null"
+                    ]
+                  },
+                  "is_fresh": {
+                    "type": "boolean"
+                  },
+                  "is_usable": {
+                    "type": "boolean"
+                  },
+                  "used_in_reference": {
+                    "type": "boolean"
+                  },
+                  "reason": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "published_at": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "date-time"
+                  },
+                  "observed_at": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "date-time"
+                  },
+                  "time_basis": {
+                    "enum": [
+                      "source",
+                      "unknown",
+                      null
+                    ]
+                  }
+                },
+                "required": [
+                  "is_success",
+                  "price",
+                  "currency",
+                  "unit",
+                  "purity",
+                  "quote_type",
+                  "difference",
+                  "difference_rial",
+                  "is_close",
+                  "is_fresh",
+                  "is_usable",
+                  "used_in_reference",
+                  "reason",
+                  "published_at",
+                  "observed_at",
+                  "time_basis"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "gold_18k",
+              "silver_999",
+              "coin_bahar",
+              "coin_emami",
+              "coin_half",
+              "coin_quarter",
+              "gold_ounce",
+              "usdt"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "is_success",
+          "status",
+          "group",
+          "url",
+          "reference_eligible",
+          "latency_ms",
+          "http_status",
+          "error",
+          "prices"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "schema_version",
+    "date",
+    "time",
+    "datetime",
+    "timestamp",
+    "timezone",
+    "refresh_interval_seconds",
+    "method",
+    "prices",
+    "source_summary",
+    "source_count",
+    "successful_sources",
+    "sources"
+  ],
+  "additionalProperties": false
+}

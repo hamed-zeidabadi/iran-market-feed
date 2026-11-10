@@ -1,0 +1,127 @@
+{
+  "schema_version": 1,
+  "primary_assets": [
+    "gold_18k",
+    "silver_999",
+    "coin_bahar",
+    "coin_emami",
+    "coin_half",
+    "coin_quarter",
+    "gold_ounce",
+    "usdt"
+  ],
+  "policy": {
+    "min_groups": 3,
+    "max_age_seconds": 5400,
+    "future_tolerance_seconds": 120,
+    "max_spread_ratio": 0.02
+  },
+  "tolerances": {
+    "gold_18k": 1000,
+    "silver_999": 1000,
+    "coin_bahar": 1000,
+    "coin_emami": 1000,
+    "coin_half": 1000,
+    "coin_quarter": 1000,
+    "gold_ounce": 1,
+    "usdt": 1000
+  },
+  "sources": [
+    {
+      "id": "union_tehran_tv",
+      "url": "https://www.estjt.ir/tv/",
+      "group": "union_tehran",
+      "adapter": "estjt",
+      "enabled": true,
+      "reference_eligible": true,
+      "assets": [
+        "gold_18k",
+        "coin_bahar",
+        "coin_emami",
+        "coin_half",
+        "coin_quarter",
+        "gold_ounce"
+      ]
+    },
+    {
+      "id": "telegram_ecogold_ir",
+      "url": "https://t.me/s/ecogold_ir",
+      "group": "ecogold",
+      "adapter": "channel",
+      "enabled": true,
+      "reference_eligible": true,
+      "assets": [
+        "coin_bahar",
+        "coin_emami",
+        "coin_half",
+        "coin_quarter"
+      ]
+    },
+    {
+      "id": "telegram_tgjugold",
+      "url": "https://t.me/s/tgjugold",
+      "group": "tgju",
+      "adapter": "channel",
+      "enabled": true,
+      "reference_eligible": true,
+      "assets": [
+        "gold_18k"
+      ]
+    },
+    {
+      "id": "telegram_tgjucoin",
+      "url": "https://t.me/s/tgjucoin",
+      "group": "tgju",
+      "adapter": "channel",
+      "enabled": true,
+      "reference_eligible": true,
+      "assets": [
+        "coin_bahar",
+        "coin_emami",
+        "coin_half",
+        "coin_quarter"
+      ]
+    },
+    {
+      "id": "bale_ecogold_ir",
+      "url": "https://ble.ir/s/ecogold_ir",
+      "group": "ecogold",
+      "adapter": "channel",
+      "enabled": true,
+      "reference_eligible": true,
+      "assets": [
+        "gold_18k",
+        "silver_999",
+        "gold_ounce"
+      ]
+    },
+    {
+      "id": "nobitex_usdt",
+      "url": "https://apiv2.nobitex.ir/v3/orderbook/USDTIRT",
+      "group": "nobitex",
+      "adapter": "nobitex",
+      "enabled": true,
+      "reference_eligible": true,
+      "assets": [
+        "usdt"
+      ],
+      "kind": "midpoint"
+    },
+    {
+      "id": "ontala",
+      "url": "https://ontala.ir/",
+      "group": "ontala",
+      "adapter": "ontala",
+      "enabled": true,
+      "reference_eligible": false,
+      "assets": [
+        "gold_18k",
+        "coin_bahar",
+        "coin_emami",
+        "coin_half",
+        "coin_quarter",
+        "gold_ounce"
+      ]
+    }
+  ]
+}
