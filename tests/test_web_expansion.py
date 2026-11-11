@@ -1,4 +1,5 @@
 from copy import deepcopy
+from dataclasses import replace
 from datetime import timedelta
 from decimal import Decimal
 import json
@@ -99,7 +100,11 @@ class ParsianTests(unittest.TestCase):
         self.assertEqual({q.asset:q.price for q in result},
                          {'parsian_100mg':2600000,'parsian_1000mg':26700000,'parsian_1100mg':29000000})
         self.assertTrue(all((q.purity,q.unit,q.currency,q.kind)==('750','coin','IRT','indicative_ex_vat') for q in result))
-        self.assertTrue(all(q.published_at=='2026-11-10T15:29:00+03:30' for q in result))
+        # Tala's priceLastTime is the page render clock, so it must not become a quote time.
+        self.assertTrue(all(q.published_at is None and q.time_basis=='unknown' for q in result))
+        output=report([self.source],result)
+        self.assertIsNone(output['parsian']['parsian_1000mg']['price'])
+        self.assertEqual(output['sources']['sample']['parsian']['parsian_1000mg']['reason'],'unknown_time')
 
     def test_unknown_currency_purity_or_tax_basis_not_accepted(self):
         for old,new in [('750','995'),('تومان','واحد'),('بدون لحاظ شدن مالیات','با لحاظ شدن مالیات')]:
@@ -118,7 +123,9 @@ class ParsianTests(unittest.TestCase):
         self.assertNotIn('parsian_1100mg',[q.asset for q in self.parse(PARSIAN_HTML.replace('1.1گرم','1.1001گرم'))])
 
     def test_same_aggregation_contract_and_stable_weight_catalog(self):
-        result=report([self.source],self.parse())
+        # Stand-in for a publisher that does state a real quote time.
+        timed=[replace(q,published_at='2026-11-10T15:29:00+03:30',time_basis='source') for q in self.parse()]
+        result=report([self.source],timed)
         self.assertEqual(set(result['prices']),set(load_config('sources.json')['primary_assets']))
         self.assertEqual(set(result['parsian']),set(PARSIAN_ASSETS))
         self.assertEqual(result['parsian']['parsian_1000mg']['price'],26700000)
@@ -161,6 +168,7 @@ class PublisherPageTests(unittest.TestCase):
         html='<title>طلا 18 عیار</title><span id="priceLastTime">15:29 1405/08/19</span><div class="rateBox"><h2>بالاترین قیمت امروز</h2><h3>999</h3></div><div class="rateBox"><h2>آخرین قیمت</h2><h3>۲۵,۰۰۰,۰۰۰</h3></div>'
         result=extract(html,src,NOW.isoformat())
         self.assertEqual(result[0].price,25000000)
+        self.assertIsNone(result[0].published_at)
         self.assertEqual(extract(html,{**src,'currency':'IRR'},NOW.isoformat()),[])
         self.assertEqual(extract(html.replace('۲۵,۰۰۰,۰۰۰','-177000000'),src,NOW.isoformat()),[])
 

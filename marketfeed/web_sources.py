@@ -63,11 +63,13 @@ def tgju_snapshot(body, source, fetched):
 
 
 def tala_time(soup):
-    node = soup.select_one('#priceLastTime')
-    if not node:
-        return None
-    match = re.fullmatch(r'(\d{1,2}:\d{2})\s+(14\d{2}/\d{1,2}/\d{1,2})', node.get_text(' ', strip=True).translate(DIGITS))
-    return local_jalali(match[2] + ' ' + match[1]) if match else None
+    """Tala's #priceLastTime is the page render clock, not the rate's time.
+
+    Measured 1405/08/20: it advanced every minute while the 18k, half and
+    quarter prices stayed unchanged, and it equals the AJAX request time. Using
+    it would make a stale rate look fresh, so no publication time is returned.
+    """
+    return None
 
 
 def tala_parsian(body, source, fetched):
@@ -333,7 +335,68 @@ def motalla(body, source, fetched):
     return out
 
 
+def swissquote(body, source, fetched):
+    """Swissquote public XAU/USD bid/ask; the price is the bid/ask midpoint.
+
+    ts is identical across platforms whose quotes differ, so it is the snapshot
+    time rather than a per-platform tick time. The source stays comparison-only.
+    """
+    data = json.loads(body)
+    if not isinstance(data, list):
+        raise ValueError('Swissquote quote list required')
+    for entry in data:
+        try:
+            stamp = datetime.fromtimestamp(int(entry['ts']) / 1000, UTC)
+            profile = entry['spreadProfilePrices'][0]
+            bid, ask = Decimal(str(profile['bid'])), Decimal(str(profile['ask']))
+        except (KeyError, IndexError, TypeError, ValueError, ArithmeticError):
+            continue
+        if not 0 < bid <= ask:
+            continue
+        out = []
+        add(out, source, 'gold_ounce', (bid + ask) / 2, fetched, stamp.isoformat())
+        return out
+    return []
+
+
+BAHA24_LABELS = {'سکه امامی': 'coin_emami', 'تمام سکه': 'coin_bahar', 'نیم سکه': 'coin_half',
+                 'ربع سکه': 'coin_quarter', 'انس طلا': 'gold_ounce', 'اونس طلا': 'gold_ounce', 'تتر': 'usdt'}
+
+
+def baha24(body, source, fetched):
+    """Hourly price posts of @baha24com; the message's own time is the quote time.
+
+    The post's gram-gold and mithqal lines repeat the same number all day and
+    are ignored. Coins are rounded by the channel to 500,000 toman.
+    """
+    soup = BeautifulSoup(body, 'html.parser')
+    latest = {}
+    for message in soup.select('.tgme_widget_message'):
+        if message.select_one('.tgme_widget_message_forwarded_from'):
+            continue
+        node, stamp = message.select_one('.tgme_widget_message_text'), message.select_one('.tgme_widget_message_date time[datetime]')
+        if not node or not stamp:
+            continue
+        try:
+            moment = datetime.fromisoformat(stamp['datetime'])
+        except ValueError:
+            continue
+        if moment.tzinfo is None:
+            continue
+        text = node.get_text('\n', strip=True).translate(DIGITS).replace('\u200e', '').replace('\u200f', '')
+        for label, asset in BAHA24_LABELS.items():
+            match = re.search(r'(?m)^\s*' + re.escape(label) + r'\s*:\s*\$?\s*([\d,]+(?:\.\d+)?)\s*$', text)
+            if not match:
+                continue
+            found = []
+            add(found, source, asset, match[1], fetched, moment.isoformat())
+            if found and (asset not in latest or moment > datetime.fromisoformat(latest[asset].published_at)):
+                latest[asset] = found[0]
+    return list(latest.values())
+
+
 WEB_ADAPTERS = {'tgju_snapshot':tgju_snapshot, 'tala_parsian':tala_parsian, 'goldika':goldika, 'motalla':motalla,
+                'swissquote':swissquote, 'baha24':baha24,
                 'goldapi':goldapi, 'arznab':arznab,
                 'tala_price':tala_price, 'tabangohar_parsian':tabangohar_parsian,
                 'talaclinic':talaclinic, 'alanchand':alanchand,

@@ -187,7 +187,7 @@
       "group": "tala",
       "adapter": "tala_price",
       "enabled": true,
-      "reference_eligible": true,
+      "reference_eligible": false,
       "assets": ["gold_18k"],
       "currency": "IRT"
     },
@@ -197,7 +197,7 @@
       "group": "tala",
       "adapter": "tala_parsian",
       "enabled": true,
-      "reference_eligible": true,
+      "reference_eligible": false,
       "assets": [
         "parsian_100mg",
         "parsian_200mg",
@@ -355,7 +355,7 @@
       "group": "tala",
       "adapter": "tala_price",
       "enabled": true,
-      "reference_eligible": true,
+      "reference_eligible": false,
       "assets": ["coin_half"],
       "currency": "IRT"
     },
@@ -365,7 +365,7 @@
       "group": "tala",
       "adapter": "tala_price",
       "enabled": true,
-      "reference_eligible": true,
+      "reference_eligible": false,
       "assets": ["coin_quarter"],
       "currency": "IRT"
     },
@@ -414,6 +414,35 @@
         "coin_quarter"
       ],
       "note": "Comparison only: trading-platform board; upstream and independence not stated. observedAt is the snapshot time."
+    },
+    {
+      "id": "swissquote_xau",
+      "url": "https://forex-data-feed.swissquote.com/public-quotes/bboquotes/instrument/XAU/USD",
+      "group": "swissquote",
+      "adapter": "swissquote",
+      "enabled": true,
+      "reference_eligible": false,
+      "assets": [
+        "gold_ounce"
+      ],
+      "note": "Comparison only: bid/ask midpoint; ts is the shared snapshot time, not a verified per-quote tick time"
+    },
+    {
+      "id": "telegram_baha24com",
+      "url": "https://t.me/s/baha24com",
+      "group": "baha24",
+      "adapter": "baha24",
+      "enabled": true,
+      "reference_eligible": false,
+      "assets": [
+        "coin_bahar",
+        "coin_emami",
+        "coin_half",
+        "coin_quarter",
+        "gold_ounce",
+        "usdt"
+      ],
+      "note": "Comparison only: hourly channel posts; message time is the quote time; upstream and rate type not stated. Gram-gold line ignored (constant all day)."
     },
     {
       "id": "goldika",
