@@ -222,6 +222,8 @@
     },
     {
       "id": "tabangohar_parsian",
+      "timeout": 25,
+      "attempts": 3,
       "url": "https://tabangohar.com/GheymatKhan/prices_in_table_parsian.html",
       "group": "tabangohar",
       "adapter": "tabangohar_parsian",

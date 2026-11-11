@@ -132,6 +132,7 @@ def load_config(path):
             if s['url']!='wss://api1.tabdeal.org/stream/':raise ValueError('documented Tabdeal public spot stream required')
         elif u.scheme!='https':raise ValueError('HTTPS source required')
         if not s.get('group'):raise ValueError('publisher group required')
+        if not 0<s.get('timeout',15)<=30 or not 1<=s.get('attempts',2)<=4:raise ValueError('invalid per-source resource limits')
         if not isinstance(s.get('enabled'),bool):raise ValueError('enabled must be boolean')
         if not s.get('assets') or not set(s['assets']) <= set(assets):raise ValueError('explicit supported assets required')
     if config['policy']['max_age_seconds']<=0:raise ValueError('invalid freshness limit')
@@ -166,7 +167,7 @@ def main():
     if not 1<=args.workers<=16 or not 0<args.timeout<=60:cli.error('invalid resource limits')
     quotes=[];health=[]
     with ThreadPoolExecutor(max_workers=args.workers) as pool:
-        tasks={pool.submit(collect,s,args.timeout,2,args.diagnostics_dir):s for s in selected}
+        tasks={pool.submit(collect,s,s.get('timeout',args.timeout),s.get('attempts',2),args.diagnostics_dir):s for s in selected}
         for task in as_completed(tasks):
             try:found,state=task.result()
             except Exception as exc:
