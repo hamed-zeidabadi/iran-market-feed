@@ -24,7 +24,10 @@ export async function dispatch(env, fetchImpl = fetch) {
   const res = await fetchImpl(`${base}/runs?status=queued&per_page=1`, {
     headers,
   });
-  if (!res.ok) throw new Error(`run lookup failed: HTTP ${res.status}`);
+  if (!res.ok)
+    throw new Error(
+      `run lookup failed: HTTP ${res.status} ${await detail(res)}`,
+    );
   if ((await res.json()).total_count >= 1)
     return { skipped: "run already queued" };
 
@@ -36,15 +39,34 @@ export async function dispatch(env, fetchImpl = fetch) {
       body: JSON.stringify({ ref }),
     });
     if (res.status === 204) return { dispatched: true, attempt: attempt + 1 };
-    last = res.status;
+    last = `HTTP ${res.status} ${await detail(res)}`;
     if (res.status < 500 && res.status !== 429) break;
   }
-  throw new Error(`workflow dispatch failed: HTTP ${last}`);
+  throw new Error(`workflow dispatch failed: ${last}`);
+}
+
+// GitHub error text only (never request headers or the token), for the log.
+async function detail(res) {
+  try {
+    return String((await res.text()) ?? "").slice(0, 200);
+  } catch {
+    return "";
+  }
 }
 
 export default {
-  async scheduled(_controller, env, ctx) {
-    ctx.waitUntil(dispatch(env).then((r) => console.log(JSON.stringify(r))));
+  async scheduled(controller, env, ctx) {
+    const at = new Date(controller.scheduledTime).toISOString();
+    console.log(JSON.stringify({ tick: at, cron: controller.cron }));
+    ctx.waitUntil(
+      dispatch(env).then(
+        (r) => console.log(JSON.stringify({ tick: at, ...r })),
+        (e) => {
+          console.error(JSON.stringify({ tick: at, error: e.message }));
+          throw e;
+        },
+      ),
+    );
   },
   // No public trigger endpoint.
   async fetch() {

@@ -6,3 +6,6 @@ public/api/prices.json
 .validation/
 *.egg-info/
 build/
+
+.wrangler/
+scheduler/cloudflare/npx
