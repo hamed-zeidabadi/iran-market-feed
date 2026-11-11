@@ -368,6 +368,35 @@
       "currency": "IRT"
     },
     {
+      "id": "gold_api",
+      "url": "https://api.gold-api.com/price/XAU",
+      "group": "goldapi",
+      "adapter": "goldapi",
+      "enabled": true,
+      "reference_eligible": true,
+      "assets": ["gold_ounce"],
+      "note": "Non-Iranian XAU/USD spot with provider updatedAt; bid/ask/mid basis not stated by the provider"
+    },
+    {
+      "id": "arznab",
+      "url": "https://arznab.com/api/prices",
+      "group": "arznab",
+      "adapter": "arznab",
+      "enabled": true,
+      "reference_eligible": false,
+      "assets": [
+        "gold_18k",
+        "coin_bahar",
+        "coin_emami",
+        "coin_half",
+        "coin_quarter",
+        "gold_ounce",
+        "silver_999",
+        "usdt"
+      ],
+      "note": "Comparison only: aggregator; upstream and rate type are not stated per item. Silver 999 is derived by the site from 999.9 (commodity exchange). Per-item ux is the last change time."
+    },
+    {
       "id": "goldika",
       "url": "https://goldika.ir/api/v2/public/pricing/summary",
       "group": "goldika",

@@ -6,7 +6,7 @@ import re
 
 from bs4 import BeautifulSoup
 
-from .core import DIGITS, number, iso
+from .core import DIGITS, UTC, number, iso
 from .parsers import quote
 from .times import TEHRAN, jalali_to_date
 
@@ -268,7 +268,48 @@ def goldika(body, source, fetched):
     return out
 
 
+def goldapi(body, source, fetched):
+    """gold-api.com XAU spot: USD per troy ounce with the provider's updatedAt."""
+    data = json.loads(body)
+    if not isinstance(data, dict) or data.get('symbol') != 'XAU' or data.get('currency') != 'USD' \
+            or data.get('exchangeRate') != 1:
+        raise ValueError('gold-api XAU/USD payload required')
+    moment = datetime.fromisoformat(data['updatedAt'])
+    if moment.tzinfo is None:
+        return []
+    out = []
+    add(out, source, 'gold_ounce', data['price'], fetched, moment.isoformat())
+    return out
+
+
+# Arznab keys: (asset, unit). Rates are the site's own /api/prices values; ux is
+# the item's own update time (the same per-row clock the site displays), not the
+# page-wide "last check" or the response clock.
+ARZNAB_ASSETS = {'IR_GOLD_18K': ('gold_18k', 'irt'), 'IR_COIN_BAHAR': ('coin_bahar', 'irt'),
+                 'IR_COIN_EMAMI': ('coin_emami', 'irt'), 'IR_COIN_HALF': ('coin_half', 'irt'),
+                 'IR_COIN_QUARTER': ('coin_quarter', 'irt'), 'XAUUSD': ('gold_ounce', 'usd'),
+                 'SILVER_999': ('silver_999', 'irt'), 'USDT_IRT': ('usdt', 'irt')}
+
+
+def arznab(body, source, fetched):
+    data = json.loads(body)
+    items = data.get('items') if isinstance(data, dict) else None
+    if not isinstance(items, dict) or data.get('ok') is not True or data.get('stale') is not False:
+        raise ValueError('fresh Arznab price list required')
+    out = []
+    for key, (asset, unit) in ARZNAB_ASSETS.items():
+        item = items.get(key)
+        if not isinstance(item, dict) or item.get('u') != unit:
+            continue
+        stamp = item.get('ux')
+        if isinstance(stamp, bool) or not isinstance(stamp, int) or stamp <= 0:
+            continue
+        add(out, source, asset, item.get('p'), fetched, datetime.fromtimestamp(stamp, UTC).isoformat())
+    return out
+
+
 WEB_ADAPTERS = {'tgju_snapshot':tgju_snapshot, 'tala_parsian':tala_parsian, 'goldika':goldika,
+                'goldapi':goldapi, 'arznab':arznab,
                 'tala_price':tala_price, 'tabangohar_parsian':tabangohar_parsian,
                 'talaclinic':talaclinic, 'alanchand':alanchand,
                 'wallex_gold':wallex_gold, 'taline':taline, 'chartix_snapshot':chartix,
