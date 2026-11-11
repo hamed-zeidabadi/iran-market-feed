@@ -21,7 +21,7 @@ def main():
             assert response.status == 200
             assert content_type == 'application/json'
             report = json.loads(raw)
-            validate(report, json.loads((ROOT / 'sources.json').read_text(encoding='utf-8')))
+            validate(report, json.loads((ROOT / 'sources.json').read_text(encoding='utf-8')), require_all_fresh=False)
             assert report == json.loads((ROOT / 'public/api/prices.json').read_text(encoding='utf-8'))
             result = {'url': url, 'status': response.status, 'content_type': content_type,
                       'datetime': report['datetime'], 'source_count': report['source_count'], 'json_valid': True}

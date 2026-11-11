@@ -1,10 +1,10 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:iran-market-feed:prices:v2",
+  "$id": "urn:iran-market-feed:prices:v3",
   "type": "object",
   "properties": {
     "schema_version": {
-      "const": 2
+      "const": 3
     },
     "date": {
       "type": "string",
@@ -1698,6 +1698,434 @@
               "usdt"
             ],
             "additionalProperties": false
+          },
+          "parsian": {
+            "type": "object",
+            "properties": {
+              "parsian_50mg": {
+                "allOf": [
+                  {
+                    "$ref": "#/$defs/parsian_observation"
+                  },
+                  {
+                    "properties": {
+                      "weight_grams": {
+                        "const": 0.05
+                      }
+                    }
+                  }
+                ]
+              },
+              "parsian_100mg": {
+                "allOf": [
+                  {
+                    "$ref": "#/$defs/parsian_observation"
+                  },
+                  {
+                    "properties": {
+                      "weight_grams": {
+                        "const": 0.1
+                      }
+                    }
+                  }
+                ]
+              },
+              "parsian_150mg": {
+                "allOf": [
+                  {
+                    "$ref": "#/$defs/parsian_observation"
+                  },
+                  {
+                    "properties": {
+                      "weight_grams": {
+                        "const": 0.15
+                      }
+                    }
+                  }
+                ]
+              },
+              "parsian_200mg": {
+                "allOf": [
+                  {
+                    "$ref": "#/$defs/parsian_observation"
+                  },
+                  {
+                    "properties": {
+                      "weight_grams": {
+                        "const": 0.2
+                      }
+                    }
+                  }
+                ]
+              },
+              "parsian_250mg": {
+                "allOf": [
+                  {
+                    "$ref": "#/$defs/parsian_observation"
+                  },
+                  {
+                    "properties": {
+                      "weight_grams": {
+                        "const": 0.25
+                      }
+                    }
+                  }
+                ]
+              },
+              "parsian_300mg": {
+                "allOf": [
+                  {
+                    "$ref": "#/$defs/parsian_observation"
+                  },
+                  {
+                    "properties": {
+                      "weight_grams": {
+                        "const": 0.3
+                      }
+                    }
+                  }
+                ]
+              },
+              "parsian_350mg": {
+                "allOf": [
+                  {
+                    "$ref": "#/$defs/parsian_observation"
+                  },
+                  {
+                    "properties": {
+                      "weight_grams": {
+                        "const": 0.35
+                      }
+                    }
+                  }
+                ]
+              },
+              "parsian_400mg": {
+                "allOf": [
+                  {
+                    "$ref": "#/$defs/parsian_observation"
+                  },
+                  {
+                    "properties": {
+                      "weight_grams": {
+                        "const": 0.4
+                      }
+                    }
+                  }
+                ]
+              },
+              "parsian_450mg": {
+                "allOf": [
+                  {
+                    "$ref": "#/$defs/parsian_observation"
+                  },
+                  {
+                    "properties": {
+                      "weight_grams": {
+                        "const": 0.45
+                      }
+                    }
+                  }
+                ]
+              },
+              "parsian_500mg": {
+                "allOf": [
+                  {
+                    "$ref": "#/$defs/parsian_observation"
+                  },
+                  {
+                    "properties": {
+                      "weight_grams": {
+                        "const": 0.5
+                      }
+                    }
+                  }
+                ]
+              },
+              "parsian_600mg": {
+                "allOf": [
+                  {
+                    "$ref": "#/$defs/parsian_observation"
+                  },
+                  {
+                    "properties": {
+                      "weight_grams": {
+                        "const": 0.6
+                      }
+                    }
+                  }
+                ]
+              },
+              "parsian_700mg": {
+                "allOf": [
+                  {
+                    "$ref": "#/$defs/parsian_observation"
+                  },
+                  {
+                    "properties": {
+                      "weight_grams": {
+                        "const": 0.7
+                      }
+                    }
+                  }
+                ]
+              },
+              "parsian_800mg": {
+                "allOf": [
+                  {
+                    "$ref": "#/$defs/parsian_observation"
+                  },
+                  {
+                    "properties": {
+                      "weight_grams": {
+                        "const": 0.8
+                      }
+                    }
+                  }
+                ]
+              },
+              "parsian_900mg": {
+                "allOf": [
+                  {
+                    "$ref": "#/$defs/parsian_observation"
+                  },
+                  {
+                    "properties": {
+                      "weight_grams": {
+                        "const": 0.9
+                      }
+                    }
+                  }
+                ]
+              },
+              "parsian_1000mg": {
+                "allOf": [
+                  {
+                    "$ref": "#/$defs/parsian_observation"
+                  },
+                  {
+                    "properties": {
+                      "weight_grams": {
+                        "const": 1.0
+                      }
+                    }
+                  }
+                ]
+              },
+              "parsian_1100mg": {
+                "allOf": [
+                  {
+                    "$ref": "#/$defs/parsian_observation"
+                  },
+                  {
+                    "properties": {
+                      "weight_grams": {
+                        "const": 1.1
+                      }
+                    }
+                  }
+                ]
+              },
+              "parsian_1200mg": {
+                "allOf": [
+                  {
+                    "$ref": "#/$defs/parsian_observation"
+                  },
+                  {
+                    "properties": {
+                      "weight_grams": {
+                        "const": 1.2
+                      }
+                    }
+                  }
+                ]
+              },
+              "parsian_1300mg": {
+                "allOf": [
+                  {
+                    "$ref": "#/$defs/parsian_observation"
+                  },
+                  {
+                    "properties": {
+                      "weight_grams": {
+                        "const": 1.3
+                      }
+                    }
+                  }
+                ]
+              },
+              "parsian_1400mg": {
+                "allOf": [
+                  {
+                    "$ref": "#/$defs/parsian_observation"
+                  },
+                  {
+                    "properties": {
+                      "weight_grams": {
+                        "const": 1.4
+                      }
+                    }
+                  }
+                ]
+              },
+              "parsian_1500mg": {
+                "allOf": [
+                  {
+                    "$ref": "#/$defs/parsian_observation"
+                  },
+                  {
+                    "properties": {
+                      "weight_grams": {
+                        "const": 1.5
+                      }
+                    }
+                  }
+                ]
+              },
+              "parsian_1600mg": {
+                "allOf": [
+                  {
+                    "$ref": "#/$defs/parsian_observation"
+                  },
+                  {
+                    "properties": {
+                      "weight_grams": {
+                        "const": 1.6
+                      }
+                    }
+                  }
+                ]
+              },
+              "parsian_1700mg": {
+                "allOf": [
+                  {
+                    "$ref": "#/$defs/parsian_observation"
+                  },
+                  {
+                    "properties": {
+                      "weight_grams": {
+                        "const": 1.7
+                      }
+                    }
+                  }
+                ]
+              },
+              "parsian_1800mg": {
+                "allOf": [
+                  {
+                    "$ref": "#/$defs/parsian_observation"
+                  },
+                  {
+                    "properties": {
+                      "weight_grams": {
+                        "const": 1.8
+                      }
+                    }
+                  }
+                ]
+              },
+              "parsian_1900mg": {
+                "allOf": [
+                  {
+                    "$ref": "#/$defs/parsian_observation"
+                  },
+                  {
+                    "properties": {
+                      "weight_grams": {
+                        "const": 1.9
+                      }
+                    }
+                  }
+                ]
+              },
+              "parsian_2000mg": {
+                "allOf": [
+                  {
+                    "$ref": "#/$defs/parsian_observation"
+                  },
+                  {
+                    "properties": {
+                      "weight_grams": {
+                        "const": 2.0
+                      }
+                    }
+                  }
+                ]
+              },
+              "parsian_2100mg": {
+                "allOf": [
+                  {
+                    "$ref": "#/$defs/parsian_observation"
+                  },
+                  {
+                    "properties": {
+                      "weight_grams": {
+                        "const": 2.1
+                      }
+                    }
+                  }
+                ]
+              },
+              "parsian_2500mg": {
+                "allOf": [
+                  {
+                    "$ref": "#/$defs/parsian_observation"
+                  },
+                  {
+                    "properties": {
+                      "weight_grams": {
+                        "const": 2.5
+                      }
+                    }
+                  }
+                ]
+              },
+              "parsian_3000mg": {
+                "allOf": [
+                  {
+                    "$ref": "#/$defs/parsian_observation"
+                  },
+                  {
+                    "properties": {
+                      "weight_grams": {
+                        "const": 3.0
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "required": [
+              "parsian_50mg",
+              "parsian_100mg",
+              "parsian_150mg",
+              "parsian_200mg",
+              "parsian_250mg",
+              "parsian_300mg",
+              "parsian_350mg",
+              "parsian_400mg",
+              "parsian_450mg",
+              "parsian_500mg",
+              "parsian_600mg",
+              "parsian_700mg",
+              "parsian_800mg",
+              "parsian_900mg",
+              "parsian_1000mg",
+              "parsian_1100mg",
+              "parsian_1200mg",
+              "parsian_1300mg",
+              "parsian_1400mg",
+              "parsian_1500mg",
+              "parsian_1600mg",
+              "parsian_1700mg",
+              "parsian_1800mg",
+              "parsian_1900mg",
+              "parsian_2000mg",
+              "parsian_2100mg",
+              "parsian_2500mg",
+              "parsian_3000mg"
+            ],
+            "additionalProperties": false
           }
         },
         "required": [
@@ -1709,10 +2137,439 @@
           "latency_ms",
           "http_status",
           "error",
-          "prices"
+          "prices",
+          "parsian"
         ],
         "additionalProperties": false
       }
+    },
+    "parsian": {
+      "type": "object",
+      "properties": {
+        "parsian_50mg": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/parsian_reference"
+            },
+            {
+              "properties": {
+                "weight_grams": {
+                  "const": 0.05
+                }
+              }
+            }
+          ]
+        },
+        "parsian_100mg": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/parsian_reference"
+            },
+            {
+              "properties": {
+                "weight_grams": {
+                  "const": 0.1
+                }
+              }
+            }
+          ]
+        },
+        "parsian_150mg": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/parsian_reference"
+            },
+            {
+              "properties": {
+                "weight_grams": {
+                  "const": 0.15
+                }
+              }
+            }
+          ]
+        },
+        "parsian_200mg": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/parsian_reference"
+            },
+            {
+              "properties": {
+                "weight_grams": {
+                  "const": 0.2
+                }
+              }
+            }
+          ]
+        },
+        "parsian_250mg": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/parsian_reference"
+            },
+            {
+              "properties": {
+                "weight_grams": {
+                  "const": 0.25
+                }
+              }
+            }
+          ]
+        },
+        "parsian_300mg": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/parsian_reference"
+            },
+            {
+              "properties": {
+                "weight_grams": {
+                  "const": 0.3
+                }
+              }
+            }
+          ]
+        },
+        "parsian_350mg": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/parsian_reference"
+            },
+            {
+              "properties": {
+                "weight_grams": {
+                  "const": 0.35
+                }
+              }
+            }
+          ]
+        },
+        "parsian_400mg": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/parsian_reference"
+            },
+            {
+              "properties": {
+                "weight_grams": {
+                  "const": 0.4
+                }
+              }
+            }
+          ]
+        },
+        "parsian_450mg": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/parsian_reference"
+            },
+            {
+              "properties": {
+                "weight_grams": {
+                  "const": 0.45
+                }
+              }
+            }
+          ]
+        },
+        "parsian_500mg": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/parsian_reference"
+            },
+            {
+              "properties": {
+                "weight_grams": {
+                  "const": 0.5
+                }
+              }
+            }
+          ]
+        },
+        "parsian_600mg": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/parsian_reference"
+            },
+            {
+              "properties": {
+                "weight_grams": {
+                  "const": 0.6
+                }
+              }
+            }
+          ]
+        },
+        "parsian_700mg": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/parsian_reference"
+            },
+            {
+              "properties": {
+                "weight_grams": {
+                  "const": 0.7
+                }
+              }
+            }
+          ]
+        },
+        "parsian_800mg": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/parsian_reference"
+            },
+            {
+              "properties": {
+                "weight_grams": {
+                  "const": 0.8
+                }
+              }
+            }
+          ]
+        },
+        "parsian_900mg": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/parsian_reference"
+            },
+            {
+              "properties": {
+                "weight_grams": {
+                  "const": 0.9
+                }
+              }
+            }
+          ]
+        },
+        "parsian_1000mg": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/parsian_reference"
+            },
+            {
+              "properties": {
+                "weight_grams": {
+                  "const": 1.0
+                }
+              }
+            }
+          ]
+        },
+        "parsian_1100mg": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/parsian_reference"
+            },
+            {
+              "properties": {
+                "weight_grams": {
+                  "const": 1.1
+                }
+              }
+            }
+          ]
+        },
+        "parsian_1200mg": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/parsian_reference"
+            },
+            {
+              "properties": {
+                "weight_grams": {
+                  "const": 1.2
+                }
+              }
+            }
+          ]
+        },
+        "parsian_1300mg": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/parsian_reference"
+            },
+            {
+              "properties": {
+                "weight_grams": {
+                  "const": 1.3
+                }
+              }
+            }
+          ]
+        },
+        "parsian_1400mg": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/parsian_reference"
+            },
+            {
+              "properties": {
+                "weight_grams": {
+                  "const": 1.4
+                }
+              }
+            }
+          ]
+        },
+        "parsian_1500mg": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/parsian_reference"
+            },
+            {
+              "properties": {
+                "weight_grams": {
+                  "const": 1.5
+                }
+              }
+            }
+          ]
+        },
+        "parsian_1600mg": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/parsian_reference"
+            },
+            {
+              "properties": {
+                "weight_grams": {
+                  "const": 1.6
+                }
+              }
+            }
+          ]
+        },
+        "parsian_1700mg": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/parsian_reference"
+            },
+            {
+              "properties": {
+                "weight_grams": {
+                  "const": 1.7
+                }
+              }
+            }
+          ]
+        },
+        "parsian_1800mg": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/parsian_reference"
+            },
+            {
+              "properties": {
+                "weight_grams": {
+                  "const": 1.8
+                }
+              }
+            }
+          ]
+        },
+        "parsian_1900mg": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/parsian_reference"
+            },
+            {
+              "properties": {
+                "weight_grams": {
+                  "const": 1.9
+                }
+              }
+            }
+          ]
+        },
+        "parsian_2000mg": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/parsian_reference"
+            },
+            {
+              "properties": {
+                "weight_grams": {
+                  "const": 2.0
+                }
+              }
+            }
+          ]
+        },
+        "parsian_2100mg": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/parsian_reference"
+            },
+            {
+              "properties": {
+                "weight_grams": {
+                  "const": 2.1
+                }
+              }
+            }
+          ]
+        },
+        "parsian_2500mg": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/parsian_reference"
+            },
+            {
+              "properties": {
+                "weight_grams": {
+                  "const": 2.5
+                }
+              }
+            }
+          ]
+        },
+        "parsian_3000mg": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/parsian_reference"
+            },
+            {
+              "properties": {
+                "weight_grams": {
+                  "const": 3.0
+                }
+              }
+            }
+          ]
+        }
+      },
+      "required": [
+        "parsian_50mg",
+        "parsian_100mg",
+        "parsian_150mg",
+        "parsian_200mg",
+        "parsian_250mg",
+        "parsian_300mg",
+        "parsian_350mg",
+        "parsian_400mg",
+        "parsian_450mg",
+        "parsian_500mg",
+        "parsian_600mg",
+        "parsian_700mg",
+        "parsian_800mg",
+        "parsian_900mg",
+        "parsian_1000mg",
+        "parsian_1100mg",
+        "parsian_1200mg",
+        "parsian_1300mg",
+        "parsian_1400mg",
+        "parsian_1500mg",
+        "parsian_1600mg",
+        "parsian_1700mg",
+        "parsian_1800mg",
+        "parsian_1900mg",
+        "parsian_2000mg",
+        "parsian_2100mg",
+        "parsian_2500mg",
+        "parsian_3000mg"
+      ],
+      "additionalProperties": false
     }
   },
   "required": [
@@ -1728,7 +2585,217 @@
     "source_summary",
     "source_count",
     "successful_sources",
-    "sources"
+    "sources",
+    "parsian"
   ],
-  "additionalProperties": false
+  "additionalProperties": false,
+  "$defs": {
+    "parsian_reference": {
+      "type": "object",
+      "properties": {
+        "label": {
+          "type": "string"
+        },
+        "price": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "exclusiveMinimum": 0
+        },
+        "currency": {
+          "const": "IRT"
+        },
+        "unit": {
+          "const": "coin"
+        },
+        "purity": {
+          "const": "750"
+        },
+        "quote_type": {
+          "const": "indicative_ex_vat"
+        },
+        "status": {
+          "enum": [
+            "ok",
+            "provisional",
+            "disputed",
+            "unavailable"
+          ]
+        },
+        "direction": {
+          "type": "null"
+        },
+        "source_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "published_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "observed_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "uses_observed_time": {
+          "const": false
+        },
+        "spread_percent": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "tolerance": {
+          "type": "number",
+          "minimum": 0
+        },
+        "contributors": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "weight_grams": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        }
+      },
+      "required": [
+        "label",
+        "price",
+        "currency",
+        "unit",
+        "purity",
+        "quote_type",
+        "status",
+        "direction",
+        "source_count",
+        "published_at",
+        "observed_at",
+        "uses_observed_time",
+        "spread_percent",
+        "tolerance",
+        "contributors",
+        "weight_grams"
+      ],
+      "additionalProperties": false
+    },
+    "parsian_observation": {
+      "type": "object",
+      "properties": {
+        "is_success": {
+          "type": "boolean"
+        },
+        "price": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "exclusiveMinimum": 0
+        },
+        "currency": {
+          "const": "IRT"
+        },
+        "unit": {
+          "const": "coin"
+        },
+        "purity": {
+          "const": "750"
+        },
+        "quote_type": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "difference": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "difference_rial": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "is_close": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "is_fresh": {
+          "type": "boolean"
+        },
+        "is_usable": {
+          "type": "boolean"
+        },
+        "used_in_reference": {
+          "type": "boolean"
+        },
+        "reason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "published_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "observed_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "time_basis": {
+          "enum": [
+            "source",
+            "unknown",
+            null
+          ]
+        },
+        "weight_grams": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        }
+      },
+      "required": [
+        "is_success",
+        "price",
+        "currency",
+        "unit",
+        "purity",
+        "quote_type",
+        "difference",
+        "difference_rial",
+        "is_close",
+        "is_fresh",
+        "is_usable",
+        "used_in_reference",
+        "reason",
+        "published_at",
+        "observed_at",
+        "time_basis",
+        "weight_grams"
+      ],
+      "additionalProperties": false
+    }
+  }
 }

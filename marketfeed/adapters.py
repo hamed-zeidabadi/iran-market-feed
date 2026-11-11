@@ -74,6 +74,9 @@ def tgju_message(text, source, fetched, timestamp):
 
 def _extract(body,s,fetched):
     adapter=s['adapter']
+    from .web_sources import WEB_ADAPTERS
+    if adapter in WEB_ADAPTERS:
+        return WEB_ADAPTERS[adapter](body, s, fetched)
     if adapter in ('tabdeal_depth', 'dollargold'):
         from .new_sources import tabdeal_depth, dollargold_posts
         return (tabdeal_depth if adapter=='tabdeal_depth' else dollargold_posts)(body,s,fetched)

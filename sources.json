@@ -24,7 +24,35 @@
     "coin_half": 1000,
     "coin_quarter": 1000,
     "gold_ounce": 1,
-    "usdt": 1000
+    "usdt": 1000,
+    "parsian_50mg": 1000,
+    "parsian_100mg": 1000,
+    "parsian_150mg": 1000,
+    "parsian_200mg": 1000,
+    "parsian_250mg": 1000,
+    "parsian_300mg": 1000,
+    "parsian_350mg": 1000,
+    "parsian_400mg": 1000,
+    "parsian_450mg": 1000,
+    "parsian_500mg": 1000,
+    "parsian_600mg": 1000,
+    "parsian_700mg": 1000,
+    "parsian_800mg": 1000,
+    "parsian_900mg": 1000,
+    "parsian_1000mg": 1000,
+    "parsian_1100mg": 1000,
+    "parsian_1200mg": 1000,
+    "parsian_1300mg": 1000,
+    "parsian_1400mg": 1000,
+    "parsian_1500mg": 1000,
+    "parsian_1600mg": 1000,
+    "parsian_1700mg": 1000,
+    "parsian_1800mg": 1000,
+    "parsian_1900mg": 1000,
+    "parsian_2000mg": 1000,
+    "parsian_2100mg": 1000,
+    "parsian_2500mg": 1000,
+    "parsian_3000mg": 1000
   },
   "sources": [
     {
@@ -100,12 +128,13 @@
       "url": "https://apiv2.nobitex.ir/v3/orderbook/USDTIRT",
       "group": "nobitex",
       "adapter": "nobitex",
-      "enabled": true,
+      "enabled": false,
       "reference_eligible": true,
       "assets": [
         "usdt"
       ],
-      "kind": "midpoint"
+      "kind": "midpoint",
+      "disabled_reason": "Repeated HTTP 403 in local and GitHub validation; receiver retained for recovery"
     },
     {
       "id": "ontala",
@@ -151,6 +180,261 @@
         "gold_ounce",
         "usdt"
       ]
+    },
+    {
+      "id": "tgju_web",
+      "url": "https://call2.tgju.org/ajax.json",
+      "group": "tgju",
+      "adapter": "tgju_snapshot",
+      "enabled": true,
+      "reference_eligible": true,
+      "assets": [
+        "gold_18k",
+        "silver_999",
+        "coin_bahar",
+        "coin_emami",
+        "coin_half",
+        "coin_quarter",
+        "gold_ounce",
+        "usdt"
+      ]
+    },
+    {
+      "id": "tala_gold",
+      "url": "https://www.tala.ir/price/18k",
+      "group": "tala",
+      "adapter": "tala_price",
+      "enabled": true,
+      "reference_eligible": true,
+      "assets": [
+        "gold_18k"
+      ],
+      "currency": "IRT"
+    },
+    {
+      "id": "tala_parsian",
+      "url": "https://www.tala.ir/price/parsian",
+      "group": "tala",
+      "adapter": "tala_parsian",
+      "enabled": true,
+      "reference_eligible": true,
+      "assets": [
+        "parsian_100mg",
+        "parsian_200mg",
+        "parsian_300mg",
+        "parsian_400mg",
+        "parsian_500mg",
+        "parsian_600mg",
+        "parsian_700mg",
+        "parsian_800mg",
+        "parsian_900mg",
+        "parsian_1000mg",
+        "parsian_1100mg",
+        "parsian_1200mg",
+        "parsian_1300mg",
+        "parsian_1400mg",
+        "parsian_1500mg",
+        "parsian_1600mg",
+        "parsian_1700mg",
+        "parsian_1800mg",
+        "parsian_1900mg",
+        "parsian_2000mg",
+        "parsian_2100mg"
+      ]
+    },
+    {
+      "id": "tabangohar_parsian",
+      "url": "https://tabangohar.com/GheymatKhan/prices_in_table_parsian.html",
+      "group": "tabangohar",
+      "adapter": "tabangohar_parsian",
+      "enabled": true,
+      "reference_eligible": false,
+      "assets": [
+        "parsian_50mg",
+        "parsian_100mg",
+        "parsian_150mg",
+        "parsian_200mg",
+        "parsian_250mg",
+        "parsian_300mg",
+        "parsian_350mg",
+        "parsian_400mg",
+        "parsian_450mg",
+        "parsian_500mg",
+        "parsian_600mg",
+        "parsian_700mg",
+        "parsian_800mg",
+        "parsian_900mg",
+        "parsian_1000mg",
+        "parsian_1100mg",
+        "parsian_1200mg",
+        "parsian_1300mg",
+        "parsian_1400mg",
+        "parsian_1500mg",
+        "parsian_1600mg",
+        "parsian_1700mg",
+        "parsian_1800mg",
+        "parsian_1900mg",
+        "parsian_2000mg",
+        "parsian_2500mg",
+        "parsian_3000mg"
+      ],
+      "kind": "metal_value"
+    },
+    {
+      "id": "telegram_talaclinic1",
+      "url": "https://t.me/s/talaclinic1",
+      "group": "tabangohar",
+      "adapter": "talaclinic",
+      "enabled": true,
+      "reference_eligible": false,
+      "assets": [
+        "gold_18k",
+        "gold_ounce"
+      ]
+    },
+    {
+      "id": "alanchand",
+      "url": "https://alanchand.com/gold-price",
+      "group": "alanchand",
+      "adapter": "alanchand",
+      "enabled": false,
+      "reference_eligible": false,
+      "assets": [
+        "gold_18k",
+        "coin_emami",
+        "coin_bahar",
+        "coin_half",
+        "coin_quarter",
+        "gold_ounce"
+      ],
+      "disabled_reason": "Only page-wide update time; individual quote publication unverified"
+    },
+    {
+      "id": "taline_gold",
+      "url": "https://taline.ir/goldprice/",
+      "group": "taline",
+      "adapter": "taline",
+      "enabled": false,
+      "reference_eligible": false,
+      "assets": [
+        "gold_18k"
+      ],
+      "disabled_reason": "Day-only price date; article/cache times are not price timestamps"
+    },
+    {
+      "id": "taline_parsian",
+      "url": "https://taline.ir/goldprice/parsian/",
+      "group": "taline",
+      "adapter": "taline",
+      "enabled": false,
+      "reference_eligible": false,
+      "assets": [
+        "parsian_1000mg"
+      ],
+      "disabled_reason": "Missing price publication time and unspecified tax/retail basis"
+    },
+    {
+      "id": "wallex_gold",
+      "url": "https://wallex.ir/gold",
+      "group": "wallex",
+      "adapter": "wallex_gold",
+      "enabled": false,
+      "reference_eligible": false,
+      "assets": [
+        "gold_18k"
+      ],
+      "disabled_reason": "Synthetic price; query refresh/render time is not price publication; ounce is in USDT"
+    },
+    {
+      "id": "chartix_gold",
+      "url": "https://chartix.ir/market/tala",
+      "group": "chartix",
+      "adapter": "chartix_snapshot",
+      "enabled": false,
+      "reference_eligible": false,
+      "assets": [
+        "gold_18k"
+      ],
+      "disabled_reason": "Snapshot has no quote publication timestamp"
+    },
+    {
+      "id": "tabangohar_gold",
+      "url": "https://tabangohar.com/GheymatKhan/prices_in_table.html",
+      "group": "tabangohar",
+      "adapter": "tabangohar_gold",
+      "enabled": false,
+      "reference_eligible": false,
+      "assets": [
+        "gold_18k"
+      ],
+      "disabled_reason": "Public c-price endpoint has no publication timestamp"
+    },
+    {
+      "id": "tala_coin_emami",
+      "url": "https://www.tala.ir/price/sekke-jad",
+      "group": "tala",
+      "adapter": "tala_price",
+      "enabled": false,
+      "reference_eligible": false,
+      "assets": [
+        "coin_emami"
+      ],
+      "currency": "IRT",
+      "disabled_reason": "Live page returned a negative coin price"
+    },
+    {
+      "id": "tala_half",
+      "url": "https://www.tala.ir/price/sekke-nim",
+      "group": "tala",
+      "adapter": "tala_price",
+      "enabled": true,
+      "reference_eligible": true,
+      "assets": [
+        "coin_half"
+      ],
+      "currency": "IRT"
+    },
+    {
+      "id": "tala_quarter",
+      "url": "https://www.tala.ir/price/sekke-rob",
+      "group": "tala",
+      "adapter": "tala_price",
+      "enabled": true,
+      "reference_eligible": true,
+      "assets": [
+        "coin_quarter"
+      ],
+      "currency": "IRT"
     }
+  ],
+  "parsian_assets": [
+    "parsian_50mg",
+    "parsian_100mg",
+    "parsian_150mg",
+    "parsian_200mg",
+    "parsian_250mg",
+    "parsian_300mg",
+    "parsian_350mg",
+    "parsian_400mg",
+    "parsian_450mg",
+    "parsian_500mg",
+    "parsian_600mg",
+    "parsian_700mg",
+    "parsian_800mg",
+    "parsian_900mg",
+    "parsian_1000mg",
+    "parsian_1100mg",
+    "parsian_1200mg",
+    "parsian_1300mg",
+    "parsian_1400mg",
+    "parsian_1500mg",
+    "parsian_1600mg",
+    "parsian_1700mg",
+    "parsian_1800mg",
+    "parsian_1900mg",
+    "parsian_2000mg",
+    "parsian_2100mg",
+    "parsian_2500mg",
+    "parsian_3000mg"
   ]
 }

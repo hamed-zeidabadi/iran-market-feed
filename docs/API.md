@@ -1,4 +1,4 @@
-# قرارداد API، نسخهٔ ۲
+# قرارداد API، نسخهٔ ۳
 
 `GET /api/prices.json` — بدون پارامتر، کلید API یا دیتابیس؛ پاسخ `application/json`.
 
@@ -32,6 +32,9 @@ for (const [asset, value] of Object.entries(feed.prices)) {
 ## قیمت‌ها و واحدها
 
 تمام هشت کلید همیشه حاضرند. طلا و نقره: `IRT/gram` با عیار `750` و `999`؛ چهار نوع سکه: `IRT/coin`؛ اونس: `USD/troy_ounce`؛ تتر: `IRT/USDT`.
+
+نسخهٔ ۳ هشت قلم `prices` را حفظ می‌کند و بخش ثابت `parsian` را به سطح اصلی و هر منبع اضافه می‌کند. ۲۸ وزن از ۵۰ میلی‌گرم تا ۳ گرم تعریف شده‌اند؛ نام دقیق وزن‌ها در schema است. نمونه: `feed.parsian.parsian_1000mg.price` و `feed.sources.tala_parsian.parsian.parsian_1000mg.published_at`.
+هر قلم پارسیان `weight_grams` عددی، عیار ۷۵۰، واحد coin و قیمت تومانی دارد. قیمت‌ها از نرخ همان وزن استخراج می‌شوند؛ نرخ وزن دیگر محاسبه یا حدس زده نمی‌شود. مرجع `indicative_ex_vat` از نرخ اعلامی بدون مالیات است، نه قیمت قطعی فروشگاه. `metal_value` تابان‌گوهر صرفاً ارزش طلای خام است و در مرجع محصول رأی ندارد. وزن فاقد نرخ هم‌نوع زمان‌دار، price=null دارد.
 `quote_type` برای تتر `midpoint` و برای نرخ‌های تابلو `indicative` است. `price` عدد JSON یا `null` است. `direction` به‌دلیل نبود تاریخچه همیشه `null` است.
 `status` یکی از `ok`، `provisional`، `disputed` و `unavailable` است؛ دو وضعیت اول تعداد شواهد را بیان می‌کنند و اختلاف بیش از ۲٪ وضعیت را به `disputed` تبدیل می‌کند. برای disputed هم میانه منتشر می‌شود؛ برای unavailable قیمت null است.
 

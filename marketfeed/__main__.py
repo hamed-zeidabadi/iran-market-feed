@@ -24,6 +24,11 @@ def atomic_json(path, data):
 
 
 def read_source(source, timeout):
+    if source['adapter'] == 'tgju_snapshot':
+        # Same public snapshot requested by TGJU's homepage JavaScript.
+        return read_https(source['url'] + '?rev=' + str(time.time_ns()), timeout)
+    if source['adapter'] == 'tabangohar_parsian':
+        return read_https(source['url'], timeout, data=b'item=all')
     if source['adapter']=='tabdeal_depth':
         try:
             return read_tabdeal_stream(source, timeout)
@@ -64,11 +69,11 @@ def read_tabdeal_stream(source, timeout):
             connection.close()
 
 
-def read_https(url, timeout):
+def read_https(url, timeout, data=None):
     req = Request(url, headers={
         'User-Agent': 'IranMarketFeed/0.1 (open-source research collector)',
         'Accept': 'text/html,application/json',
-    })
+    }, data=data)
     with urlopen(req, timeout=timeout) as response:
         raw = response.read(2_000_001)
         if len(raw) > 2_000_000:
@@ -107,6 +112,11 @@ def collect(source, timeout, attempts, diagnostics_dir=None):
 
 def load_config(path):
     config=json.loads(Path(path).read_text(encoding='utf-8'))
+    from .core import PARSIAN_ASSETS
+    additional = config.get('parsian_assets', [])
+    if len(additional) != len(set(additional)) or not set(additional) <= set(PARSIAN_ASSETS):
+        raise ValueError('invalid Parsian asset weights')
+    assets = config['primary_assets'] + additional
     ids=set(); urls=set()
     for s in config['sources']:
         if not re.fullmatch(r'[a-z0-9_]+', s['id']):raise ValueError('invalid source ID')
@@ -121,12 +131,12 @@ def load_config(path):
         elif u.scheme!='https':raise ValueError('HTTPS source required')
         if not s.get('group'):raise ValueError('publisher group required')
         if not isinstance(s.get('enabled'),bool):raise ValueError('enabled must be boolean')
-        if not s.get('assets') or not set(s['assets']) <= set(config['primary_assets']):raise ValueError('explicit primary assets required')
+        if not s.get('assets') or not set(s['assets']) <= set(assets):raise ValueError('explicit supported assets required')
     if config['policy']['max_age_seconds']<=0:raise ValueError('invalid freshness limit')
     if config['policy']['min_groups']<1 or config['policy']['future_tolerance_seconds']<0 or config['policy']['max_spread_ratio']<0:raise ValueError('invalid aggregation policy')
     from .core import PRIMARY_ASSETS
     if len(config['primary_assets'])!=8 or set(config['primary_assets'])!=set(PRIMARY_ASSETS):raise ValueError('the eight required primary assets must be configured')
-    for asset in config['primary_assets']:
+    for asset in assets:
         if config['tolerances'][asset]<0:raise ValueError('invalid tolerance')
     return config
 

@@ -45,10 +45,11 @@ def canonical_time(value):
 
 def build_report(config, quotes, health, now):
     clock = output_clock(now)
+    assets = config['primary_assets'] + config.get('parsian_assets', [])
     sources_config = {s['id']: s for s in config['sources'] if s.get('enabled', True)}
     found = {}
     for q in quotes:
-        if q.source not in sources_config or q.asset not in config['primary_assets']:
+        if q.source not in sources_config or q.asset not in assets:
             continue
         key = (q.source, q.asset)
         rank = lambda x: (iso(x.published_at) if canonical_time(x.published_at) else datetime.min.replace(tzinfo=timezone.utc),
@@ -57,7 +58,7 @@ def build_report(config, quotes, health, now):
             found[key] = q
     reasons = {key: structural_reason(q) or time_reason(q, now, config['policy']) for key, q in found.items()}
     prices, selected_by_asset, centers = {}, {}, {}
-    for asset in config['primary_assets']:
+    for asset in assets:
         by_group = {}
         eligible = [q for key, q in found.items() if q.asset == asset and reasons[key] is None
                     and sources_config[q.source].get('reference_eligible', True)
@@ -82,11 +83,13 @@ def build_report(config, quotes, health, now):
             'spread_percent': numeric(spread * 100) if spread is not None else None,
             'tolerance': config['tolerances'][asset], 'contributors': sorted(selected_by_asset[asset]),
         }
+        if 'weight_grams' in spec:
+            prices[asset]['weight_grams'] = spec['weight_grams']
     health_by_id = {h['id']: h for h in health}
     sources = {}
     for source_id, source in sources_config.items():
         detail = {}
-        for asset in config['primary_assets']:
+        for asset in assets:
             q = found.get((source_id, asset))
             valid = q is not None and structural_reason(q) is None
             reason = reasons.get((source_id, asset), 'missing')
@@ -106,16 +109,22 @@ def build_report(config, quotes, health, now):
                 'published_at': published, 'observed_at': canonical_time(q.fetched_at) if q else None,
                 'time_basis': 'source' if published else 'unknown' if q else None,
             }
+            if 'weight_grams' in ASSETS[asset]:
+                detail[asset]['weight_grams'] = ASSETS[asset]['weight_grams']
         state = health_by_id.get(source_id, {'status': 'skipped'})
         sources[source_id] = {
             'is_success': any(d['is_success'] for d in detail.values()), 'status': state['status'],
             'group': source['group'], 'url': source['url'], 'reference_eligible': source.get('reference_eligible', True),
             'latency_ms': state.get('latency_ms'), 'http_status': state.get('http_status'),
-            'error': state.get('error_type'), 'prices': detail,
+            'error': state.get('error_type'),
+            'prices': {a: detail[a] for a in config['primary_assets']},
+            'parsian': {a: detail[a] for a in config.get('parsian_assets', [])},
         }
     return {
-        'schema_version': 2, **clock, 'refresh_interval_seconds': 600,
-        'method': 'median_one_vote_per_publisher', 'prices': prices,
+        'schema_version': 3, **clock, 'refresh_interval_seconds': 600,
+        'method': 'median_one_vote_per_publisher',
+        'prices': {a: prices[a] for a in config['primary_assets']},
+        'parsian': {a: prices[a] for a in config.get('parsian_assets', [])},
         'source_summary': {key: s['is_success'] for key, s in sources.items()},
         'source_count': len(sources), 'successful_sources': sum(s['is_success'] for s in sources.values()),
         'sources': sources,

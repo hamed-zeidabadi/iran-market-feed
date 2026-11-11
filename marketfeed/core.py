@@ -21,6 +21,14 @@ ASSETS = {
  'usdt': {'label': 'تتر', 'currency': 'IRT', 'unit': 'USDT', 'quote_type': 'midpoint'},
 }
 
+# Fixed product weights, never inferred from the price or scaled from one gram.
+PARSIAN_WEIGHTS = tuple(sorted(set(range(100, 2200, 100)) | {50, 150, 250, 350, 450, 2500, 3000}))
+PARSIAN_ASSETS = tuple(f'parsian_{mg}mg' for mg in PARSIAN_WEIGHTS)
+ASSETS.update({f'parsian_{mg}mg': {
+    'label': f'پارسیان {mg / 1000:g} گرم', 'currency': 'IRT', 'unit': 'coin',
+    'purity': '750', 'weight_grams': mg / 1000, 'quote_type': 'indicative_ex_vat',
+} for mg in PARSIAN_WEIGHTS})
+
 
 def number(value):
     text = str(value).translate(DIGITS).replace(',', '').replace('\u200e', '').strip()
