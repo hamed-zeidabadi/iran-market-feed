@@ -37,7 +37,7 @@ class ContractTests(unittest.TestCase):
 
     def test_workflow_loads_with_expected_deployment_contract(self):
         workflow = yaml.load(Path('.github/workflows/update.yml').read_text(encoding='utf-8'), Loader=yaml.BaseLoader)
-        self.assertEqual(workflow['on']['schedule'][0]['cron'], '7,37 * * * *')
+        self.assertEqual(workflow['on']['schedule'][0]['cron'], '7,17,27,37,47,57 * * * *')
         self.assertEqual(workflow['permissions']['contents'], 'read')
         self.assertEqual(workflow['permissions']['pages'], 'write')
         self.assertEqual(workflow['permissions']['id-token'], 'write')
@@ -47,6 +47,18 @@ class ContractTests(unittest.TestCase):
         self.assertEqual(workflow['jobs']['deploy']['needs'], 'collect')
         self.assertTrue(any(s.get('uses', '').startswith('actions/deploy-pages@') for s in workflow['jobs']['deploy']['steps']))
         self.assertFalse(any('git commit' in s.get('run', '') for s in steps))
+
+    def test_schedule_intervals_match_public_refresh_contract(self):
+        workflow = yaml.load(Path('.github/workflows/update.yml').read_text(encoding='utf-8'), Loader=yaml.BaseLoader)
+        cron = workflow['on']['schedule'][0]['cron'].split()
+        self.assertEqual(cron[1:], ['*', '*', '*', '*'])
+        minutes = sorted(map(int, cron[0].split(',')))
+        gaps = [(minutes[(i + 1) % len(minutes)] - minute) % 60 for i, minute in enumerate(minutes)]
+        self.assertEqual(gaps, [10] * 6)
+        report = build_report(self.config, [], [], NOW)
+        self.assertEqual(report['refresh_interval_seconds'], gaps[0] * 60)
+        self.assertIn('workflow_dispatch', workflow['on'])
+        self.assertLess(sum(int(workflow['jobs'][j]['timeout-minutes']) for j in ('collect', 'deploy')), 10)
 
 
 if __name__ == '__main__':

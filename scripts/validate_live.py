@@ -31,7 +31,7 @@ def validate(report, config):
     active = {s['id']: s for s in config['sources'] if s['enabled']}
     assert set(report['sources']) == set(active)
     assert report['source_count'] == report['successful_sources'] == len(active)
-    assert report['refresh_interval_seconds'] == 1800
+    assert report['refresh_interval_seconds'] == 600
     for source_id, source in report['sources'].items():
         expected_status = None if active[source_id]['url'].startswith('wss://') else 200
         assert source['is_success'] and source['status'] == 'parsed' and source['http_status'] == expected_status, source_id

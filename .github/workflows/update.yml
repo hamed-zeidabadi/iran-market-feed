@@ -1,8 +1,8 @@
-name: Update prices every 30 minutes
+name: Update prices every 10 minutes
 on:
   workflow_dispatch:
   schedule:
-    - cron: '7,37 * * * *'
+    - cron: '7,17,27,37,47,57 * * * *'
   push:
     branches: [main]
 permissions:
@@ -15,7 +15,7 @@ concurrency:
 jobs:
   collect:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 6
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -32,6 +32,7 @@ jobs:
   deploy:
     needs: collect
     runs-on: ubuntu-latest
+    timeout-minutes: 3
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

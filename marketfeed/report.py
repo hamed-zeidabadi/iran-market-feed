@@ -114,7 +114,7 @@ def build_report(config, quotes, health, now):
             'error': state.get('error_type'), 'prices': detail,
         }
     return {
-        'schema_version': 2, **clock, 'refresh_interval_seconds': 1800,
+        'schema_version': 2, **clock, 'refresh_interval_seconds': 600,
         'method': 'median_one_vote_per_publisher', 'prices': prices,
         'source_summary': {key: s['is_success'] for key, s in sources.items()},
         'source_count': len(sources), 'successful_sources': sum(s['is_success'] for s in sources.values()),

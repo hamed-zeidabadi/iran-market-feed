@@ -26,7 +26,7 @@
       "const": "Asia/Tehran"
     },
     "refresh_interval_seconds": {
-      "const": 1800
+      "const": 600
     },
     "method": {
       "const": "median_one_vote_per_publisher"
