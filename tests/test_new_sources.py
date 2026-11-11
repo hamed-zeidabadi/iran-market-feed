@@ -5,11 +5,12 @@ from decimal import Decimal
 from pathlib import Path
 import unittest
 from unittest.mock import patch, Mock
+from websocket import WebSocketTimeoutException
 
 from marketfeed.adapters import extract
 from marketfeed.__main__ import collect, load_config, read_source
 from marketfeed.core import iso
-from marketfeed.new_sources import depth_midpoint, milliseconds, TABDEAL_STREAM
+from marketfeed.new_sources import depth_midpoint, milliseconds, TABDEAL_STREAM, TABDEAL_TRADES_URL
 from marketfeed.report import build_report
 from test_report import config, quote, NOW
 
@@ -104,6 +105,38 @@ class TabdealTests(unittest.TestCase):
             quotes,state=collect(STREAM,5,1)
         self.assertEqual(quotes,[])
         self.assertEqual(state['status'],'error')
+
+    def test_stream_timeout_falls_back_to_documented_trades(self):
+        raw=json.dumps([{'price':'261000','qty':'2','time':int(NOW.timestamp()*1000)}]).encode()
+        with patch('marketfeed.__main__.create_connection',side_effect=WebSocketTimeoutException('timeout')), \
+             patch('marketfeed.__main__.read_https',return_value=(raw,200)) as http:
+            quotes,state=collect(STREAM,5,1)
+        http.assert_called_once_with(TABDEAL_TRADES_URL,5)
+        self.assertEqual(state['status'],'parsed')
+        self.assertEqual(state['http_status'],200)
+        self.assertEqual(quotes[0].kind,'last_trade')
+        self.assertEqual(iso(quotes[0].published_at),NOW)
+
+    def test_rest_trade_time_not_response_or_server_time(self):
+        old=NOW-timedelta(hours=12)
+        raw=json.dumps([{'price':'261000','qty':'2','time':int(old.timestamp()*1000)}])
+        q=extract(raw,STREAM,NOW.isoformat())[0]
+        self.assertEqual(iso(q.published_at),old)
+        self.assertEqual(q.kind,'last_trade')
+        cfg=config();cfg['primary_assets']=['usdt'];cfg['tolerances']={'usdt':1000};cfg['sources']=[STREAM]
+        report=build_report(cfg,[q],[],NOW)
+        self.assertIsNone(report['prices']['usdt']['price'])
+        self.assertEqual(report['sources']['tabdeal']['prices']['usdt']['reason'],'stale')
+
+    def test_rest_response_latest_valid_trade_not_list_order(self):
+        raw=json.dumps([{'price':'261000','qty':'2','time':int(NOW.timestamp()*1000)},
+                        {'price':'260000','qty':'1','time':int((NOW-timedelta(minutes=5)).timestamp()*1000)}])
+        self.assertEqual(extract(raw,STREAM,NOW.isoformat())[0].price,261000)
+
+    def test_rest_unknown_time_zero_and_missing_trade_rejected(self):
+        for rows in ([],[{'price':'261000','qty':'2'}],
+                     [{'price':'0','qty':'2','time':int(NOW.timestamp()*1000)}]):
+            with self.assertRaises(ValueError):extract(json.dumps(rows),STREAM,NOW.isoformat())
 
 
 class DollarGoldTests(unittest.TestCase):

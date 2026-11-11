@@ -10,6 +10,7 @@ from .core import iso, number
 from .parsers import message_time, parse_lines, quote
 
 TABDEAL_STREAM = 'usdtirt@depth@2000ms'
+TABDEAL_TRADES_URL = 'https://api1.tabdeal.org/r/api/v1/trades?symbol=USDTIRT&limit=5'
 
 
 def milliseconds(value):
@@ -47,6 +48,21 @@ def depth_midpoint(bids, asks):
 
 def tabdeal_depth(body, source, fetched):
     envelope = json.loads(body)
+    if isinstance(envelope, list):
+        # Only the receiver's fixed, documented USDTIRT trades URL supplies lists.
+        # An old last trade is still dated honestly and never becomes a midpoint.
+        if not envelope:
+            raise ValueError('empty trade response')
+        trades = []
+        for trade in envelope:
+            if not isinstance(trade, dict):
+                raise ValueError('invalid trade')
+            timestamp = milliseconds(trade.get('time'))
+            price = number(trade.get('price'))
+            number(trade.get('qty'))
+            trades.append((iso(timestamp), price, timestamp))
+        _, value, timestamp = max(trades)
+        return [quote(source, 'usdt', value, timestamp, fetched, kind='last_trade')]
     if not isinstance(envelope, dict) or not isinstance(envelope.get('data'), dict):
         raise ValueError('invalid depth envelope')
     data = envelope.get('data', {})

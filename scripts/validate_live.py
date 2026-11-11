@@ -33,8 +33,8 @@ def validate(report, config):
     assert report['source_count'] == report['successful_sources'] == len(active)
     assert report['refresh_interval_seconds'] == 600
     for source_id, source in report['sources'].items():
-        expected_status = None if active[source_id]['url'].startswith('wss://') else 200
-        assert source['is_success'] and source['status'] == 'parsed' and source['http_status'] == expected_status, source_id
+        expected_statuses = (None, 200) if active[source_id]['url'].startswith('wss://') else (200,)
+        assert source['is_success'] and source['status'] == 'parsed' and source['http_status'] in expected_statuses, source_id
         assert set(source['prices']) == set(config['primary_assets'])
         valid = [d for d in source['prices'].values() if d['is_success']]
         assert valid and all(d['is_fresh'] and d['published_at'] for d in valid), source_id

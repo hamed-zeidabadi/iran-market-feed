@@ -24,6 +24,16 @@ def atomic_json(path, data):
 
 
 def read_source(source, timeout):
+    if source['adapter']=='tabdeal_depth':
+        try:
+            return read_tabdeal_stream(source, timeout)
+        except (WebSocketException, OSError, TimeoutError):
+            from .new_sources import TABDEAL_TRADES_URL
+            return read_https(TABDEAL_TRADES_URL, timeout)
+    return read_https(source['url'], timeout)
+
+
+def read_tabdeal_stream(source, timeout):
     if source['adapter'] == 'tabdeal_depth':
         from .new_sources import TABDEAL_STREAM
         # One public spot snapshot per scheduled collection; no persistent stream.
@@ -52,7 +62,10 @@ def read_source(source, timeout):
             raise ValueError('no depth snapshot received')
         finally:
             connection.close()
-    req = Request(source['url'], headers={
+
+
+def read_https(url, timeout):
+    req = Request(url, headers={
         'User-Agent': 'IranMarketFeed/0.1 (open-source research collector)',
         'Accept': 'text/html,application/json',
     })
