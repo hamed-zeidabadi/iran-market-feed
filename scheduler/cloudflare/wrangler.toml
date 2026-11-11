@@ -1,0 +1,15 @@
+name = "iran-market-feed-scheduler"
+main = "worker.mjs"
+compatibility_date = "2026-01-01"
+
+# Minutes 3, 13, 23, 33, 43, 53 (UTC), away from the top of the hour.
+[triggers]
+crons = ["3-59/10 * * * *"]
+
+[vars]
+GITHUB_REPOSITORY = "hamed-zeidabadi/iran-market-feed"
+WORKFLOW_FILE = "update.yml"
+WORKFLOW_REF = "main"
+
+# Secret, set with: npx wrangler secret put GITHUB_TOKEN
+# Fine-grained PAT limited to this repository with only Actions: Read and write.
