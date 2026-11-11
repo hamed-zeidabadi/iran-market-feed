@@ -29,6 +29,10 @@ def read_source(source, timeout):
         return read_https(source['url'] + '?rev=' + str(time.time_ns()), timeout)
     if source['adapter'] == 'tabangohar_parsian':
         return read_https(source['url'], timeout, data=b'item=all')
+    if source.get('json_body') is not None:
+        # Public read-only endpoint that the publisher's own site calls with POST.
+        return read_https(source['url'], timeout, data=json.dumps(source['json_body']).encode('utf-8'),
+                          content_type='application/json')
     if source['adapter']=='tabdeal_depth':
         try:
             return read_tabdeal_stream(source, timeout)
@@ -69,11 +73,14 @@ def read_tabdeal_stream(source, timeout):
             connection.close()
 
 
-def read_https(url, timeout, data=None):
-    req = Request(url, headers={
+def read_https(url, timeout, data=None, content_type=None):
+    headers = {
         'User-Agent': 'IranMarketFeed/0.1 (open-source research collector)',
         'Accept': 'text/html,application/json',
-    }, data=data)
+    }
+    if content_type:
+        headers['Content-Type'] = content_type
+    req = Request(url, headers=headers, data=data)
     with urlopen(req, timeout=timeout) as response:
         raw = response.read(2_000_001)
         if len(raw) > 2_000_000:
@@ -132,6 +139,7 @@ def load_config(path):
             if s['url']!='wss://api1.tabdeal.org/stream/':raise ValueError('documented Tabdeal public spot stream required')
         elif u.scheme!='https':raise ValueError('HTTPS source required')
         if not s.get('group'):raise ValueError('publisher group required')
+        if 'json_body' in s and not isinstance(s['json_body'],dict):raise ValueError('json_body must be an object')
         if not 0<s.get('timeout',15)<=30 or not 1<=s.get('attempts',2)<=4:raise ValueError('invalid per-source resource limits')
         if not isinstance(s.get('enabled'),bool):raise ValueError('enabled must be boolean')
         if not s.get('assets') or not set(s['assets']) <= set(assets):raise ValueError('explicit supported assets required')

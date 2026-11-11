@@ -399,6 +399,23 @@
       "note": "Comparison only: aggregator; upstream and rate type are not stated per item. Silver 999 is derived by the site from 999.9 (commodity exchange). Per-item ux is the last change time."
     },
     {
+      "id": "motalla",
+      "url": "https://motalla.ir/api/public/readGoldMarketBoard",
+      "group": "motalla",
+      "adapter": "motalla",
+      "json_body": {},
+      "enabled": true,
+      "reference_eligible": false,
+      "assets": [
+        "gold_18k",
+        "coin_bahar",
+        "coin_emami",
+        "coin_half",
+        "coin_quarter"
+      ],
+      "note": "Comparison only: trading-platform board; upstream and independence not stated. observedAt is the snapshot time."
+    },
+    {
       "id": "goldika",
       "url": "https://goldika.ir/api/v2/public/pricing/summary",
       "group": "goldika",

@@ -308,7 +308,32 @@ def arznab(body, source, fetched):
     return out
 
 
-WEB_ADAPTERS = {'tgju_snapshot':tgju_snapshot, 'tala_parsian':tala_parsian, 'goldika':goldika,
+MOTALLA_ASSETS = {'GOLD_18K_GRAM': ('gold_18k', 'TOMAN_PER_GRAM'), 'COIN_BAHAR_AZADI': ('coin_bahar', 'TOMAN'),
+                  'COIN_EMAMI': ('coin_emami', 'TOMAN'), 'COIN_HALF': ('coin_half', 'TOMAN'),
+                  'COIN_QUARTER': ('coin_quarter', 'TOMAN')}
+
+
+def motalla(body, source, fetched):
+    """Motalla public market board. observedAt is the publisher's snapshot time.
+
+    The ounce is omitted: the board rounds it to whole dollars.
+    """
+    data = json.loads(body)
+    items = data.get('instruments') if isinstance(data, dict) else None
+    if not isinstance(items, list):
+        raise ValueError('Motalla instruments list required')
+    moment = datetime.fromisoformat(data['observedAt'])
+    if moment.tzinfo is None:
+        return []
+    out = []
+    for item in items:
+        spec = MOTALLA_ASSETS.get(item.get('id')) if isinstance(item, dict) else None
+        if spec and item.get('unit') == spec[1]:
+            add(out, source, spec[0], item.get('price'), fetched, moment.isoformat())
+    return out
+
+
+WEB_ADAPTERS = {'tgju_snapshot':tgju_snapshot, 'tala_parsian':tala_parsian, 'goldika':goldika, 'motalla':motalla,
                 'goldapi':goldapi, 'arznab':arznab,
                 'tala_price':tala_price, 'tabangohar_parsian':tabangohar_parsian,
                 'talaclinic':talaclinic, 'alanchand':alanchand,
