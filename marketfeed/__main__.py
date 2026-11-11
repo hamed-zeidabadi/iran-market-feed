@@ -104,7 +104,9 @@ def collect(source, timeout, attempts, diagnostics_dir=None):
             retryable = (isinstance(exc, HTTPError) and exc.code in (429, 500, 502, 503, 504)) or isinstance(exc, (URLError, TimeoutError, OSError)) and not isinstance(exc, HTTPError)
             if retryable and attempt+1 < attempts:
                 time.sleep(min(2**attempt+random.random(), 5)); continue
+            reason = getattr(exc, 'reason', None) or str(exc)
             return [], {'id': source['id'], 'status': 'error', 'error_type': type(exc).__name__,
+                        'error_reason': str(reason)[:200],
                         'http_status': exc.code if isinstance(exc, HTTPError) else None,
                         'fetched_at': fetched}
     return [], {'id': source['id'], 'status': 'error'}
@@ -170,7 +172,8 @@ def main():
             except Exception as exc:
                 found,state=[],{'id':tasks[task]['id'],'status':'parser_error','error_type':type(exc).__name__}
             quotes.extend(found);health.append(state)
-            print(state['id'],state['status'],len(found),flush=True)
+            detail=' '.join(str(state[k]) for k in ('error_type','error_reason') if state.get(k))
+            print(state['id'],state['status'],len(found),detail,flush=True)
     # Unrequested sources have explicit skipped statuses, never fabricated successes.
     for s in config['sources']:
         if s['id'] not in {h['id'] for h in health}:health.append({'id':s['id'],'status':'skipped'})
