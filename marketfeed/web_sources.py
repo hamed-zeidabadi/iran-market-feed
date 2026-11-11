@@ -233,7 +233,42 @@ def tabangohar_gold(body, source, fetched):
     return out
 
 
-WEB_ADAPTERS = {'tgju_snapshot':tgju_snapshot, 'tala_parsian':tala_parsian,
+GOLDIKA_ASSETS = {'gold18': 'gold_18k', 'coin': 'coin_bahar', 'imami-coin': 'coin_emami',
+                  'half-coin': 'coin_half', 'quarter-coin': 'coin_quarter', 'ounce': 'gold_ounce'}
+
+
+def goldika(body, source, fetched):
+    """Goldika public pricing summary (the endpoint its own site polls).
+
+    Prices are rial (the site labels them ریال) except the ounce, which the
+    site divides by 100 and labels دلار. Each item carries its own UTC update
+    time and an is_valid flag; the page's currentDateTime is a render clock
+    and is never used.
+    """
+    data = json.loads(body)
+    items = data.get('prices') if isinstance(data, dict) else None
+    if not isinstance(items, list):
+        raise ValueError('Goldika prices list required')
+    out = []
+    for item in items:
+        asset = GOLDIKA_ASSETS.get(item.get('asset_key')) if isinstance(item, dict) else None
+        if not asset or item.get('is_valid') is not True:
+            continue
+        stamp = item.get('last_updated_at')
+        try:
+            moment = datetime.fromisoformat(stamp)
+            if moment.tzinfo is None:
+                continue
+            price = number(item['price'])
+        except (TypeError, ValueError, KeyError):
+            continue
+        if price <= 0:
+            continue
+        add(out, source, asset, price / (100 if asset == 'gold_ounce' else 10), fetched, moment.isoformat())
+    return out
+
+
+WEB_ADAPTERS = {'tgju_snapshot':tgju_snapshot, 'tala_parsian':tala_parsian, 'goldika':goldika,
                 'tala_price':tala_price, 'tabangohar_parsian':tabangohar_parsian,
                 'talaclinic':talaclinic, 'alanchand':alanchand,
                 'wallex_gold':wallex_gold, 'taline':taline, 'chartix_snapshot':chartix,

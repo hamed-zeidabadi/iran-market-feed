@@ -78,12 +78,7 @@
       "adapter": "channel",
       "enabled": true,
       "reference_eligible": true,
-      "assets": [
-        "coin_bahar",
-        "coin_emami",
-        "coin_half",
-        "coin_quarter"
-      ]
+      "assets": ["coin_bahar", "coin_emami", "coin_half", "coin_quarter"]
     },
     {
       "id": "telegram_tgjugold",
@@ -92,9 +87,7 @@
       "adapter": "channel",
       "enabled": true,
       "reference_eligible": true,
-      "assets": [
-        "gold_18k"
-      ]
+      "assets": ["gold_18k"]
     },
     {
       "id": "telegram_tgjucoin",
@@ -103,12 +96,7 @@
       "adapter": "channel",
       "enabled": true,
       "reference_eligible": true,
-      "assets": [
-        "coin_bahar",
-        "coin_emami",
-        "coin_half",
-        "coin_quarter"
-      ]
+      "assets": ["coin_bahar", "coin_emami", "coin_half", "coin_quarter"]
     },
     {
       "id": "bale_ecogold_ir",
@@ -117,11 +105,7 @@
       "adapter": "channel",
       "enabled": true,
       "reference_eligible": true,
-      "assets": [
-        "gold_18k",
-        "silver_999",
-        "gold_ounce"
-      ]
+      "assets": ["gold_18k", "silver_999", "gold_ounce"]
     },
     {
       "id": "nobitex_usdt",
@@ -130,9 +114,7 @@
       "adapter": "nobitex",
       "enabled": false,
       "reference_eligible": true,
-      "assets": [
-        "usdt"
-      ],
+      "assets": ["usdt"],
       "kind": "midpoint",
       "disabled_reason": "Repeated HTTP 403 in local and GitHub validation; receiver retained for recovery"
     },
@@ -159,9 +141,7 @@
       "adapter": "tabdeal_depth",
       "enabled": true,
       "reference_eligible": true,
-      "assets": [
-        "usdt"
-      ],
+      "assets": ["usdt"],
       "kind": "midpoint"
     },
     {
@@ -206,9 +186,7 @@
       "adapter": "tala_price",
       "enabled": true,
       "reference_eligible": true,
-      "assets": [
-        "gold_18k"
-      ],
+      "assets": ["gold_18k"],
       "currency": "IRT"
     },
     {
@@ -287,10 +265,7 @@
       "adapter": "talaclinic",
       "enabled": true,
       "reference_eligible": false,
-      "assets": [
-        "gold_18k",
-        "gold_ounce"
-      ]
+      "assets": ["gold_18k", "gold_ounce"]
     },
     {
       "id": "alanchand",
@@ -316,9 +291,7 @@
       "adapter": "taline",
       "enabled": false,
       "reference_eligible": false,
-      "assets": [
-        "gold_18k"
-      ],
+      "assets": ["gold_18k"],
       "disabled_reason": "Day-only price date; article/cache times are not price timestamps"
     },
     {
@@ -328,9 +301,7 @@
       "adapter": "taline",
       "enabled": false,
       "reference_eligible": false,
-      "assets": [
-        "parsian_1000mg"
-      ],
+      "assets": ["parsian_1000mg"],
       "disabled_reason": "Missing price publication time and unspecified tax/retail basis"
     },
     {
@@ -340,9 +311,7 @@
       "adapter": "wallex_gold",
       "enabled": false,
       "reference_eligible": false,
-      "assets": [
-        "gold_18k"
-      ],
+      "assets": ["gold_18k"],
       "disabled_reason": "Synthetic price; query refresh/render time is not price publication; ounce is in USDT"
     },
     {
@@ -352,9 +321,7 @@
       "adapter": "chartix_snapshot",
       "enabled": false,
       "reference_eligible": false,
-      "assets": [
-        "gold_18k"
-      ],
+      "assets": ["gold_18k"],
       "disabled_reason": "Snapshot has no quote publication timestamp"
     },
     {
@@ -364,9 +331,7 @@
       "adapter": "tabangohar_gold",
       "enabled": false,
       "reference_eligible": false,
-      "assets": [
-        "gold_18k"
-      ],
+      "assets": ["gold_18k"],
       "disabled_reason": "Public c-price endpoint has no publication timestamp"
     },
     {
@@ -376,9 +341,7 @@
       "adapter": "tala_price",
       "enabled": false,
       "reference_eligible": false,
-      "assets": [
-        "coin_emami"
-      ],
+      "assets": ["coin_emami"],
       "currency": "IRT",
       "disabled_reason": "Live page returned a negative coin price"
     },
@@ -389,9 +352,7 @@
       "adapter": "tala_price",
       "enabled": true,
       "reference_eligible": true,
-      "assets": [
-        "coin_half"
-      ],
+      "assets": ["coin_half"],
       "currency": "IRT"
     },
     {
@@ -401,10 +362,25 @@
       "adapter": "tala_price",
       "enabled": true,
       "reference_eligible": true,
-      "assets": [
-        "coin_quarter"
-      ],
+      "assets": ["coin_quarter"],
       "currency": "IRT"
+    },
+    {
+      "id": "goldika",
+      "url": "https://goldika.ir/api/v2/public/pricing/summary",
+      "group": "goldika",
+      "adapter": "goldika",
+      "enabled": true,
+      "reference_eligible": false,
+      "assets": [
+        "gold_18k",
+        "coin_bahar",
+        "coin_emami",
+        "coin_half",
+        "coin_quarter",
+        "gold_ounce"
+      ],
+      "note": "Comparison only: trading-platform quote; rate type (buy/sell/mid) and upstream independence are not stated by the publisher"
     }
   ],
   "parsian_assets": [
