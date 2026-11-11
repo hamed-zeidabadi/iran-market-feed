@@ -149,6 +149,7 @@ def load_config(path):
     if len(config['primary_assets'])!=8 or set(config['primary_assets'])!=set(PRIMARY_ASSETS):raise ValueError('the eight required primary assets must be configured')
     for asset in assets:
         if config['tolerances'][asset]<0:raise ValueError('invalid tolerance')
+    if any(not 0<=r<=0.05 for r in config.get('tolerance_ratios',{}).values()):raise ValueError('invalid tolerance ratio')
     return config
 
 

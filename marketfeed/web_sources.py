@@ -359,6 +359,103 @@ def swissquote(body, source, fetched):
     return []
 
 
+def _book_midpoint(bid, ask):
+    """Midpoint of a best bid/ask pair, or None for an empty, crossed or implausibly wide book."""
+    if not 0 < bid <= ask:
+        return None
+    mid = (bid + ask) / 2
+    return mid if (ask - bid) / mid <= Decimal('0.05') else None
+
+
+def ramzinex_orderbook(body, source, fetched):
+    """Ramzinex USDT/IRR book (prices in rial, converted to toman).
+
+    Each level carries the ms time it last changed; the newest level time is a
+    lower bound for the book's age, so it is used as the quote time.
+    """
+    book = json.loads(body).get('data')
+    if not isinstance(book, dict):
+        raise ValueError('Ramzinex order book required')
+    bids, asks, stamps = [], [], []
+    for side, target in (('buys', bids), ('sells', asks)):
+        for level in book.get(side) or []:
+            try:
+                price, quantity = Decimal(str(level[0])), Decimal(str(level[1]))
+                stamps.append(int(level[6]))
+            except (IndexError, TypeError, ValueError, ArithmeticError):
+                continue
+            if price > 0 and quantity > 0:
+                target.append(price)
+    if not bids or not asks or not stamps:
+        return []
+    mid = _book_midpoint(max(bids), min(asks))
+    if mid is None:
+        return []
+    out = []
+    add(out, source, 'usdt', mid / 10, fetched, datetime.fromtimestamp(max(stamps) / 1000, UTC).isoformat(), kind='midpoint')
+    return out
+
+
+def exir_orderbook(body, source, fetched):
+    """Exir usdt-irt book (toman) with the book's own timestamp."""
+    book = json.loads(body).get('usdt-irt')
+    if not isinstance(book, dict):
+        raise ValueError('Exir usdt-irt order book required')
+    try:
+        moment = datetime.fromisoformat(book['timestamp'].replace('Z', '+00:00'))
+        bid = max(Decimal(str(p)) for p, q in book['bids'] if q > 0)
+        ask = min(Decimal(str(p)) for p, q in book['asks'] if q > 0)
+    except (KeyError, TypeError, ValueError, ArithmeticError):
+        return []
+    mid = _book_midpoint(bid, ask)
+    if moment.tzinfo is None or mid is None:
+        return []
+    out = []
+    add(out, source, 'usdt', mid, fetched, moment.isoformat(), kind='midpoint')
+    return out
+
+
+def wallex_trades(body, source, fetched):
+    """Wallex USDT/TMN latest trade (toman). A trade is not a midpoint: comparison only."""
+    trades = json.loads(body).get('result', {}).get('latestTrades')
+    if not isinstance(trades, list):
+        raise ValueError('Wallex trades required')
+    best = None
+    for trade in trades:
+        try:
+            moment = datetime.fromisoformat(trade['timestamp'].replace('Z', '+00:00'))
+            price = number(trade['price'])
+        except (KeyError, TypeError, ValueError, AttributeError):
+            continue
+        if trade.get('symbol') == 'USDTTMN' and moment.tzinfo is not None and price > 0 \
+                and (best is None or moment > best[0]):
+            best = (moment, price)
+    out = []
+    if best:
+        add(out, source, 'usdt', best[1], fetched, best[0].isoformat(), kind='last_trade')
+    return out
+
+
+def bitpin_matches(body, source, fetched):
+    """Bitpin USDT/IRT latest trade (toman) with the trade's own epoch time."""
+    trades = json.loads(body)
+    if not isinstance(trades, list):
+        raise ValueError('Bitpin matches required')
+    best = None
+    for trade in trades:
+        try:
+            moment = datetime.fromtimestamp(float(trade['time']), UTC)
+            price = number(trade['price'])
+        except (KeyError, TypeError, ValueError, OverflowError, OSError):
+            continue
+        if price > 0 and (best is None or moment > best[0]):
+            best = (moment, price)
+    out = []
+    if best:
+        add(out, source, 'usdt', best[1], fetched, best[0].isoformat(), kind='last_trade')
+    return out
+
+
 BAHA24_LABELS = {'سکه امامی': 'coin_emami', 'تمام سکه': 'coin_bahar', 'نیم سکه': 'coin_half',
                  'ربع سکه': 'coin_quarter', 'انس طلا': 'gold_ounce', 'اونس طلا': 'gold_ounce', 'تتر': 'usdt'}
 
@@ -396,7 +493,8 @@ def baha24(body, source, fetched):
 
 
 WEB_ADAPTERS = {'tgju_snapshot':tgju_snapshot, 'tala_parsian':tala_parsian, 'goldika':goldika, 'motalla':motalla,
-                'swissquote':swissquote, 'baha24':baha24,
+                'swissquote':swissquote, 'baha24':baha24, 'ramzinex_orderbook':ramzinex_orderbook,
+                'exir_orderbook':exir_orderbook, 'wallex_trades':wallex_trades, 'bitpin_matches':bitpin_matches,
                 'goldapi':goldapi, 'arznab':arznab,
                 'tala_price':tala_price, 'tabangohar_parsian':tabangohar_parsian,
                 'talaclinic':talaclinic, 'alanchand':alanchand,

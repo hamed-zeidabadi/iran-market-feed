@@ -36,6 +36,14 @@ def time_reason(q, now, policy):
     return None
 
 
+def tolerance_for(config, asset, center):
+    """Closeness limit: the larger of the fixed floor and a ratio of the reference price."""
+    floor = Decimal(str(config['tolerances'][asset]))
+    ratios = config.get('tolerance_ratios', {})
+    ratio = Decimal(str(ratios.get(asset, ratios.get('default', 0))))
+    return max(floor, ratio * Decimal(str(center))) if center is not None else floor
+
+
 def canonical_time(value):
     try:
         return iso(value).isoformat().replace('+00:00', 'Z') if value else None
@@ -81,7 +89,7 @@ def build_report(config, quotes, health, now):
             'observed_at': max((canonical_time(q.fetched_at) for q in selected), default=None),
             'uses_observed_time': False,
             'spread_percent': numeric(spread * 100) if spread is not None else None,
-            'tolerance': config['tolerances'][asset], 'contributors': sorted(selected_by_asset[asset]),
+            'tolerance': numeric(tolerance_for(config, asset, center)), 'contributors': sorted(selected_by_asset[asset]),
         }
         if 'weight_grams' in spec:
             prices[asset]['weight_grams'] = spec['weight_grams']
@@ -102,7 +110,7 @@ def build_report(config, quotes, health, now):
                 'quote_type': q.kind if q else None,
                 'difference': numeric(diff),
                 'difference_rial': numeric(diff * 10) if diff is not None and ASSETS[asset]['currency'] == 'IRT' else None,
-                'is_close': abs(diff) <= Decimal(str(config['tolerances'][asset])) if diff is not None else None,
+                'is_close': abs(diff) <= tolerance_for(config, asset, centers[asset]) if diff is not None else None,
                 'is_fresh': reason is None, 'is_usable': valid and reason is None and compatible,
                 'used_in_reference': source_id in selected_by_asset[asset],
                 'reason': reason if reason else None if compatible else 'different_market_or_quote_type',

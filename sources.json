@@ -16,6 +16,10 @@
     "future_tolerance_seconds": 120,
     "max_spread_ratio": 0.02
   },
+  "tolerance_ratios": {
+    "default": 0.004,
+    "gold_ounce": 0.001
+  },
   "tolerances": {
     "gold_18k": 1000,
     "silver_999": 1000,
@@ -443,6 +447,54 @@
         "usdt"
       ],
       "note": "Comparison only: hourly channel posts; message time is the quote time; upstream and rate type not stated. Gram-gold line ignored (constant all day)."
+    },
+    {
+      "id": "ramzinex_usdt",
+      "url": "https://publicapi.ramzinex.com/exchange/api/v1.0/exchange/orderbooks/11/buys_sells",
+      "group": "ramzinex",
+      "adapter": "ramzinex_orderbook",
+      "enabled": true,
+      "reference_eligible": true,
+      "assets": [
+        "usdt"
+      ],
+      "note": "USDT/IRR book midpoint (rial/10); time is the newest level change time"
+    },
+    {
+      "id": "exir_usdt",
+      "url": "https://api.exir.io/v2/orderbooks?symbol=usdt-irt",
+      "group": "exir",
+      "adapter": "exir_orderbook",
+      "enabled": true,
+      "reference_eligible": true,
+      "assets": [
+        "usdt"
+      ],
+      "note": "usdt-irt book midpoint in toman with the book's own timestamp"
+    },
+    {
+      "id": "wallex_usdt",
+      "url": "https://api.wallex.ir/v1/trades?symbol=USDTTMN",
+      "group": "wallex",
+      "adapter": "wallex_trades",
+      "enabled": true,
+      "reference_eligible": false,
+      "assets": [
+        "usdt"
+      ],
+      "note": "Last trade only (comparison); the Wallex depth endpoint has no timestamp so no midpoint is built"
+    },
+    {
+      "id": "bitpin_usdt",
+      "url": "https://api.bitpin.ir/api/v1/mth/matches/USDT_IRT/",
+      "group": "bitpin",
+      "adapter": "bitpin_matches",
+      "enabled": true,
+      "reference_eligible": false,
+      "assets": [
+        "usdt"
+      ],
+      "note": "Last trade only (comparison); the Bitpin order book has no timestamp so no midpoint is built"
     },
     {
       "id": "goldika",

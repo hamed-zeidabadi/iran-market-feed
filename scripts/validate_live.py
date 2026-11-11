@@ -68,7 +68,7 @@ def validate(report, config, require_all_fresh=True):
                 continue
             difference = Decimal(str(detail['price'])) - Decimal(str(reference))
             assert abs(Decimal(str(detail['difference'])) - difference) <= Decimal('0.000001')
-            assert detail['is_close'] == (abs(difference) <= Decimal(str(config['tolerances'][asset])))
+            assert detail['is_close'] == (abs(difference) <= Decimal(str(references[asset]['tolerance'])))
             if detail['currency'] == 'IRT':
                 assert abs(Decimal(str(detail['difference_rial'])) - difference * 10) <= Decimal('0.000001')
             else:
