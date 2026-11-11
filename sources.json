@@ -120,6 +120,8 @@
     },
     {
       "id": "ontala",
+      "timeout": 25,
+      "attempts": 3,
       "url": "https://ontala.ir/",
       "group": "ontala",
       "adapter": "ontala",
