@@ -18,6 +18,10 @@
 
 `parsian`: سکهٔ پارسیان با عیار ۷۵۰ به تفکیک وزن؛ `parsian_1000mg` یعنی یک گرم.
 
+`global_prices.silver_ounce`: اونس جهانی نقره به دلار، جدا از نقرهٔ داخلی. فعلاً منابع آن فقط مقایسه‌ای‌اند و قیمت‌های دریافتی در `sources.<id>.global_prices.silver_ounce` هستند؛ مرجع بدون زمان اعلام معتبر `null` می‌ماند.
+
+`snapshot_at` زمان snapshot ناشر است و جای `published_at` (زمان اعلام نرخ) را نمی‌گیرد. `snapshot_is_recent` فقط سن snapshot را بررسی می‌کند.
+
 | زمان | معنی |
 |---|---|
 | `date` / `time` | تاریخ شمسی و ساعت `Asia/Tehran` |

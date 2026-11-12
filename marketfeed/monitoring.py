@@ -29,10 +29,13 @@ def enrich(report, previous, config, now):
     """
     state = {'version': 1, 'sources': {}, 'last_valid': {}, 'last_run_at': report['datetime']}
     previous = previous if previous.get('version') == 1 else {}
-    for section in ('prices', 'parsian'):
+    for section in ('prices', 'parsian', 'global_prices'):
         for asset, ref in report.get(section, {}).items():
             ref['market'] = market_status(asset, now, config)
             old = previous.get('last_valid', {}).get(asset)
+            eligible_ids = {s['id'] for s in config['sources'] if s.get('enabled', True) and s.get('reference_eligible', True)}
+            if old and not set(old['contributors']) <= eligible_ids:
+                old = None
             if ref['status'] == 'ok':
                 old = {k: ref[k] for k in ('price', 'published_at', 'oldest_contributor_at', 'contributors')}
                 old['accepted_at'] = report['datetime']
@@ -44,11 +47,13 @@ def enrich(report, previous, config, now):
     for sid, source in report['sources'].items():
         old_source = previous.get('sources', {}).get(sid, {})
         entry = {'assets': {}}
-        for section in ('prices', 'parsian'):
+        for section in ('prices', 'parsian', 'global_prices'):
             for asset, item in source.get(section, {}).items():
                 if asset not in next(s['assets'] for s in config['sources'] if s['id'] == sid):
                     continue
                 old = old_source.get('assets', {}).get(asset, {})
+                if item['is_success'] and old and old.get('time_basis') != item['time_basis']:
+                    old = {}
                 count = old.get('samples', 0) + (source['status'] != 'skipped')
                 success = old.get('successes', 0) + (item['is_success'] and source['status'] != 'skipped')
                 fresh = old.get('fresh_samples', 0) + (item['is_fresh'] and source['status'] != 'skipped')
@@ -70,6 +75,7 @@ def enrich(report, previous, config, now):
                 suspicious = bool(advanced and same and peers_moved and unchanged is not None and
                                   unchanged >= config.get('monitoring', {}).get('unchanged_warning_seconds', 5400))
                 entry['assets'][asset] = {
+                    'time_basis': item['time_basis'] if item['is_success'] else old.get('time_basis'),
                     'samples': count, 'successes': success, 'fresh_samples': fresh,
                     'price': item['price'] if item['is_success'] else old.get('price'),
                     'last_published_at': timestamp if timestamp and (not last_timestamp or iso(timestamp) >= iso(last_timestamp)) else last_timestamp,

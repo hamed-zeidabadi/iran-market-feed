@@ -271,16 +271,18 @@ def goldika(body, source, fetched):
 
 
 def goldapi(body, source, fetched):
-    """gold-api.com XAU spot: USD per troy ounce with the provider's updatedAt."""
+    """updatedAt is upstream fetch time, not an asserted quote publication time."""
     data = json.loads(body)
-    if not isinstance(data, dict) or data.get('symbol') != 'XAU' or data.get('currency') != 'USD' \
+    symbol = source['url'].rstrip('/').split('/')[-1]
+    asset = {'XAU': 'gold_ounce', 'XAG': 'silver_ounce'}.get(symbol)
+    if not asset or not isinstance(data, dict) or data.get('symbol') != symbol or data.get('currency') != 'USD' \
             or data.get('exchangeRate') != 1:
         raise ValueError('gold-api XAU/USD payload required')
-    moment = datetime.fromisoformat(data['updatedAt'])
+    moment = datetime.fromisoformat(data['updatedAt'].replace('Z', '+00:00'))
     if moment.tzinfo is None:
         return []
     out = []
-    add(out, source, 'gold_ounce', data['price'], fetched, moment.isoformat())
+    add(out, source, asset, data['price'], fetched, time_basis='provider_snapshot', snapshot_at=moment.isoformat())
     return out
 
 
@@ -354,9 +356,35 @@ def swissquote(body, source, fetched):
         if not 0 < bid <= ask:
             continue
         out = []
-        add(out, source, 'gold_ounce', (bid + ask) / 2, fetched, stamp.isoformat())
+        asset = 'silver_ounce' if source['url'].endswith('/XAG/USD') else 'gold_ounce'
+        add(out, source, asset, (bid + ask) / 2, fetched, kind='midpoint',
+            time_basis='provider_snapshot', snapshot_at=stamp.isoformat())
         return out
     return []
+
+
+def hitobit_trades(body, source, fetched):
+    """Public USDTIRT trades: IRT is toman; Time is the trade's Unix ms time."""
+    from .new_sources import milliseconds
+    data = json.loads(body)
+    if not isinstance(data, list):
+        raise ValueError('Hitobit trades list required')
+    latest = None
+    for row in data:
+        try:
+            if not isinstance(row, dict):
+                continue
+            stamp = milliseconds(row['Time'])
+            price = number(row['Price'])
+            number(row['BaseQuantity'])
+            if latest is None or iso(stamp) > iso(latest[0]):
+                latest = (stamp, price)
+        except (KeyError, TypeError, ValueError, OverflowError, OSError):
+            continue
+    out = []
+    if latest:
+        add(out, source, 'usdt', latest[1], fetched, latest[0], kind='last_trade')
+    return out
 
 
 def _book_midpoint(bid, ask):
@@ -493,6 +521,7 @@ def baha24(body, source, fetched):
 
 
 WEB_ADAPTERS = {'tgju_snapshot':tgju_snapshot, 'tala_parsian':tala_parsian, 'goldika':goldika, 'motalla':motalla,
+                'hitobit_trades':hitobit_trades,
                 'swissquote':swissquote, 'baha24':baha24, 'ramzinex_orderbook':ramzinex_orderbook,
                 'exir_orderbook':exir_orderbook, 'wallex_trades':wallex_trades, 'bitpin_matches':bitpin_matches,
                 'goldapi':goldapi, 'arznab':arznab,

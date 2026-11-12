@@ -18,7 +18,8 @@
   },
   "tolerance_ratios": {
     "default": 0.004,
-    "gold_ounce": 0.001
+    "gold_ounce": 0.001,
+    "silver_ounce": 0.001
   },
   "tolerances": {
     "gold_18k": 1000,
@@ -56,7 +57,8 @@
     "parsian_2000mg": 1000,
     "parsian_2100mg": 1000,
     "parsian_2500mg": 1000,
-    "parsian_3000mg": 1000
+    "parsian_3000mg": 1000,
+    "silver_ounce": 0.01
   },
   "sources": [
     {
@@ -82,7 +84,12 @@
       "adapter": "channel",
       "enabled": true,
       "reference_eligible": true,
-      "assets": ["coin_bahar", "coin_emami", "coin_half", "coin_quarter"]
+      "assets": [
+        "coin_bahar",
+        "coin_emami",
+        "coin_half",
+        "coin_quarter"
+      ]
     },
     {
       "id": "telegram_tgjugold",
@@ -91,7 +98,9 @@
       "adapter": "channel",
       "enabled": true,
       "reference_eligible": true,
-      "assets": ["gold_18k"]
+      "assets": [
+        "gold_18k"
+      ]
     },
     {
       "id": "telegram_tgjucoin",
@@ -100,7 +109,12 @@
       "adapter": "channel",
       "enabled": true,
       "reference_eligible": true,
-      "assets": ["coin_bahar", "coin_emami", "coin_half", "coin_quarter"]
+      "assets": [
+        "coin_bahar",
+        "coin_emami",
+        "coin_half",
+        "coin_quarter"
+      ]
     },
     {
       "id": "bale_ecogold_ir",
@@ -109,7 +123,11 @@
       "adapter": "channel",
       "enabled": true,
       "reference_eligible": true,
-      "assets": ["gold_18k", "silver_999", "gold_ounce"]
+      "assets": [
+        "gold_18k",
+        "silver_999",
+        "gold_ounce"
+      ]
     },
     {
       "id": "nobitex_usdt",
@@ -118,7 +136,9 @@
       "adapter": "nobitex",
       "enabled": false,
       "reference_eligible": true,
-      "assets": ["usdt"],
+      "assets": [
+        "usdt"
+      ],
       "kind": "midpoint",
       "disabled_reason": "Repeated HTTP 403 in local and GitHub validation; receiver retained for recovery"
     },
@@ -147,7 +167,9 @@
       "adapter": "tabdeal_depth",
       "enabled": true,
       "reference_eligible": true,
-      "assets": ["usdt"],
+      "assets": [
+        "usdt"
+      ],
       "kind": "midpoint"
     },
     {
@@ -192,7 +214,9 @@
       "adapter": "tala_price",
       "enabled": true,
       "reference_eligible": false,
-      "assets": ["gold_18k"],
+      "assets": [
+        "gold_18k"
+      ],
       "currency": "IRT"
     },
     {
@@ -273,7 +297,10 @@
       "adapter": "talaclinic",
       "enabled": true,
       "reference_eligible": false,
-      "assets": ["gold_18k", "gold_ounce"]
+      "assets": [
+        "gold_18k",
+        "gold_ounce"
+      ]
     },
     {
       "id": "alanchand",
@@ -299,7 +326,9 @@
       "adapter": "taline",
       "enabled": false,
       "reference_eligible": false,
-      "assets": ["gold_18k"],
+      "assets": [
+        "gold_18k"
+      ],
       "disabled_reason": "Day-only price date; article/cache times are not price timestamps"
     },
     {
@@ -309,7 +338,9 @@
       "adapter": "taline",
       "enabled": false,
       "reference_eligible": false,
-      "assets": ["parsian_1000mg"],
+      "assets": [
+        "parsian_1000mg"
+      ],
       "disabled_reason": "Missing price publication time and unspecified tax/retail basis"
     },
     {
@@ -319,7 +350,9 @@
       "adapter": "wallex_gold",
       "enabled": false,
       "reference_eligible": false,
-      "assets": ["gold_18k"],
+      "assets": [
+        "gold_18k"
+      ],
       "disabled_reason": "Synthetic price; query refresh/render time is not price publication; ounce is in USDT"
     },
     {
@@ -329,7 +362,9 @@
       "adapter": "chartix_snapshot",
       "enabled": false,
       "reference_eligible": false,
-      "assets": ["gold_18k"],
+      "assets": [
+        "gold_18k"
+      ],
       "disabled_reason": "Snapshot has no quote publication timestamp"
     },
     {
@@ -339,7 +374,9 @@
       "adapter": "tabangohar_gold",
       "enabled": false,
       "reference_eligible": false,
-      "assets": ["gold_18k"],
+      "assets": [
+        "gold_18k"
+      ],
       "disabled_reason": "Public c-price endpoint has no publication timestamp"
     },
     {
@@ -349,7 +386,9 @@
       "adapter": "tala_price",
       "enabled": false,
       "reference_eligible": false,
-      "assets": ["coin_emami"],
+      "assets": [
+        "coin_emami"
+      ],
       "currency": "IRT",
       "disabled_reason": "Live page returned a negative coin price"
     },
@@ -360,7 +399,9 @@
       "adapter": "tala_price",
       "enabled": true,
       "reference_eligible": false,
-      "assets": ["coin_half"],
+      "assets": [
+        "coin_half"
+      ],
       "currency": "IRT"
     },
     {
@@ -370,7 +411,9 @@
       "adapter": "tala_price",
       "enabled": true,
       "reference_eligible": false,
-      "assets": ["coin_quarter"],
+      "assets": [
+        "coin_quarter"
+      ],
       "currency": "IRT"
     },
     {
@@ -379,9 +422,11 @@
       "group": "goldapi",
       "adapter": "goldapi",
       "enabled": true,
-      "reference_eligible": true,
-      "assets": ["gold_ounce"],
-      "note": "Non-Iranian XAU/USD spot with provider updatedAt; bid/ask/mid basis not stated by the provider"
+      "reference_eligible": false,
+      "assets": [
+        "gold_ounce"
+      ],
+      "note": "Comparison only: official docs define updatedAt as upstream fetch time, not quote publication. Preserved as snapshot_at."
     },
     {
       "id": "arznab",
@@ -429,7 +474,7 @@
       "assets": [
         "gold_ounce"
       ],
-      "note": "Comparison only: bid/ask midpoint; ts is the shared snapshot time, not a verified per-quote tick time"
+      "note": "Comparison only: bid/ask midpoint. Shared snapshot time is snapshot_at, never published_at."
     },
     {
       "id": "telegram_baha24com",
@@ -512,6 +557,43 @@
         "gold_ounce"
       ],
       "note": "Comparison only: trading-platform quote; rate type (buy/sell/mid) and upstream independence are not stated by the publisher"
+    },
+    {
+      "id": "hitobit_usdt",
+      "url": "https://api.hitobit.com/api/v3/trades?symbol=USDTIRT&limit=20",
+      "group": "hitobit",
+      "adapter": "hitobit_trades",
+      "enabled": true,
+      "reference_eligible": false,
+      "assets": [
+        "usdt"
+      ],
+      "kind": "last_trade",
+      "note": "USDTIRT trades in toman with Unix ms Time. Depth T is invalid; no midpoint vote."
+    },
+    {
+      "id": "gold_api_xag",
+      "url": "https://api.gold-api.com/price/XAG",
+      "group": "goldapi",
+      "adapter": "goldapi",
+      "enabled": true,
+      "reference_eligible": false,
+      "assets": [
+        "silver_ounce"
+      ],
+      "note": "Global XAG/USD per troy ounce, separate from Iranian silver_999. updatedAt is upstream fetch time only."
+    },
+    {
+      "id": "swissquote_xag",
+      "url": "https://forex-data-feed.swissquote.com/public-quotes/bboquotes/instrument/XAG/USD",
+      "group": "swissquote",
+      "adapter": "swissquote",
+      "enabled": true,
+      "reference_eligible": false,
+      "assets": [
+        "silver_ounce"
+      ],
+      "note": "Global XAG/USD bid/ask midpoint comparison, ts is a provider snapshot time."
     }
   ],
   "parsian_assets": [
@@ -543,5 +625,8 @@
     "parsian_2100mg",
     "parsian_2500mg",
     "parsian_3000mg"
+  ],
+  "global_assets": [
+    "silver_ounce"
   ]
 }

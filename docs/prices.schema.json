@@ -1117,11 +1117,29 @@
                     "enum": [
                       "source",
                       "unknown",
-                      null
+                      null,
+                      "provider_snapshot"
                     ]
                   },
                   "monitoring": {
                     "$ref": "#/$defs/monitoring"
+                  },
+                  "snapshot_at": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "date-time"
+                  },
+                  "snapshot_age_seconds": {
+                    "type": [
+                      "number",
+                      "null"
+                    ],
+                    "minimum": 0
+                  },
+                  "snapshot_is_recent": {
+                    "type": "boolean"
                   }
                 },
                 "required": [
@@ -1140,7 +1158,10 @@
                   "reason",
                   "published_at",
                   "observed_at",
-                  "time_basis"
+                  "time_basis",
+                  "snapshot_at",
+                  "snapshot_age_seconds",
+                  "snapshot_is_recent"
                 ],
                 "additionalProperties": false
               },
@@ -1223,11 +1244,29 @@
                     "enum": [
                       "source",
                       "unknown",
-                      null
+                      null,
+                      "provider_snapshot"
                     ]
                   },
                   "monitoring": {
                     "$ref": "#/$defs/monitoring"
+                  },
+                  "snapshot_at": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "date-time"
+                  },
+                  "snapshot_age_seconds": {
+                    "type": [
+                      "number",
+                      "null"
+                    ],
+                    "minimum": 0
+                  },
+                  "snapshot_is_recent": {
+                    "type": "boolean"
                   }
                 },
                 "required": [
@@ -1246,7 +1285,10 @@
                   "reason",
                   "published_at",
                   "observed_at",
-                  "time_basis"
+                  "time_basis",
+                  "snapshot_at",
+                  "snapshot_age_seconds",
+                  "snapshot_is_recent"
                 ],
                 "additionalProperties": false
               },
@@ -1329,11 +1371,29 @@
                     "enum": [
                       "source",
                       "unknown",
-                      null
+                      null,
+                      "provider_snapshot"
                     ]
                   },
                   "monitoring": {
                     "$ref": "#/$defs/monitoring"
+                  },
+                  "snapshot_at": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "date-time"
+                  },
+                  "snapshot_age_seconds": {
+                    "type": [
+                      "number",
+                      "null"
+                    ],
+                    "minimum": 0
+                  },
+                  "snapshot_is_recent": {
+                    "type": "boolean"
                   }
                 },
                 "required": [
@@ -1352,7 +1412,10 @@
                   "reason",
                   "published_at",
                   "observed_at",
-                  "time_basis"
+                  "time_basis",
+                  "snapshot_at",
+                  "snapshot_age_seconds",
+                  "snapshot_is_recent"
                 ],
                 "additionalProperties": false
               },
@@ -1435,11 +1498,29 @@
                     "enum": [
                       "source",
                       "unknown",
-                      null
+                      null,
+                      "provider_snapshot"
                     ]
                   },
                   "monitoring": {
                     "$ref": "#/$defs/monitoring"
+                  },
+                  "snapshot_at": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "date-time"
+                  },
+                  "snapshot_age_seconds": {
+                    "type": [
+                      "number",
+                      "null"
+                    ],
+                    "minimum": 0
+                  },
+                  "snapshot_is_recent": {
+                    "type": "boolean"
                   }
                 },
                 "required": [
@@ -1458,7 +1539,10 @@
                   "reason",
                   "published_at",
                   "observed_at",
-                  "time_basis"
+                  "time_basis",
+                  "snapshot_at",
+                  "snapshot_age_seconds",
+                  "snapshot_is_recent"
                 ],
                 "additionalProperties": false
               },
@@ -1541,11 +1625,29 @@
                     "enum": [
                       "source",
                       "unknown",
-                      null
+                      null,
+                      "provider_snapshot"
                     ]
                   },
                   "monitoring": {
                     "$ref": "#/$defs/monitoring"
+                  },
+                  "snapshot_at": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "date-time"
+                  },
+                  "snapshot_age_seconds": {
+                    "type": [
+                      "number",
+                      "null"
+                    ],
+                    "minimum": 0
+                  },
+                  "snapshot_is_recent": {
+                    "type": "boolean"
                   }
                 },
                 "required": [
@@ -1564,7 +1666,10 @@
                   "reason",
                   "published_at",
                   "observed_at",
-                  "time_basis"
+                  "time_basis",
+                  "snapshot_at",
+                  "snapshot_age_seconds",
+                  "snapshot_is_recent"
                 ],
                 "additionalProperties": false
               },
@@ -1647,11 +1752,29 @@
                     "enum": [
                       "source",
                       "unknown",
-                      null
+                      null,
+                      "provider_snapshot"
                     ]
                   },
                   "monitoring": {
                     "$ref": "#/$defs/monitoring"
+                  },
+                  "snapshot_at": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "date-time"
+                  },
+                  "snapshot_age_seconds": {
+                    "type": [
+                      "number",
+                      "null"
+                    ],
+                    "minimum": 0
+                  },
+                  "snapshot_is_recent": {
+                    "type": "boolean"
                   }
                 },
                 "required": [
@@ -1670,7 +1793,10 @@
                   "reason",
                   "published_at",
                   "observed_at",
-                  "time_basis"
+                  "time_basis",
+                  "snapshot_at",
+                  "snapshot_age_seconds",
+                  "snapshot_is_recent"
                 ],
                 "additionalProperties": false
               },
@@ -1753,11 +1879,29 @@
                     "enum": [
                       "source",
                       "unknown",
-                      null
+                      null,
+                      "provider_snapshot"
                     ]
                   },
                   "monitoring": {
                     "$ref": "#/$defs/monitoring"
+                  },
+                  "snapshot_at": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "date-time"
+                  },
+                  "snapshot_age_seconds": {
+                    "type": [
+                      "number",
+                      "null"
+                    ],
+                    "minimum": 0
+                  },
+                  "snapshot_is_recent": {
+                    "type": "boolean"
                   }
                 },
                 "required": [
@@ -1776,7 +1920,10 @@
                   "reason",
                   "published_at",
                   "observed_at",
-                  "time_basis"
+                  "time_basis",
+                  "snapshot_at",
+                  "snapshot_age_seconds",
+                  "snapshot_is_recent"
                 ],
                 "additionalProperties": false
               },
@@ -1859,11 +2006,29 @@
                     "enum": [
                       "source",
                       "unknown",
-                      null
+                      null,
+                      "provider_snapshot"
                     ]
                   },
                   "monitoring": {
                     "$ref": "#/$defs/monitoring"
+                  },
+                  "snapshot_at": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "date-time"
+                  },
+                  "snapshot_age_seconds": {
+                    "type": [
+                      "number",
+                      "null"
+                    ],
+                    "minimum": 0
+                  },
+                  "snapshot_is_recent": {
+                    "type": "boolean"
                   }
                 },
                 "required": [
@@ -1882,7 +2047,10 @@
                   "reason",
                   "published_at",
                   "observed_at",
-                  "time_basis"
+                  "time_basis",
+                  "snapshot_at",
+                  "snapshot_age_seconds",
+                  "snapshot_is_recent"
                 ],
                 "additionalProperties": false
               }
@@ -2326,6 +2494,18 @@
               "parsian_3000mg"
             ],
             "additionalProperties": false
+          },
+          "global_prices": {
+            "type": "object",
+            "properties": {
+              "silver_ounce": {
+                "$ref": "#/properties/sources/additionalProperties/properties/prices/properties/gold_ounce"
+              }
+            },
+            "required": [
+              "silver_ounce"
+            ],
+            "additionalProperties": false
           }
         },
         "required": [
@@ -2338,7 +2518,8 @@
           "http_status",
           "error",
           "prices",
-          "parsian"
+          "parsian",
+          "global_prices"
         ],
         "additionalProperties": false
       }
@@ -2770,6 +2951,18 @@
         "parsian_3000mg"
       ],
       "additionalProperties": false
+    },
+    "global_prices": {
+      "type": "object",
+      "properties": {
+        "silver_ounce": {
+          "$ref": "#/properties/prices/properties/gold_ounce"
+        }
+      },
+      "required": [
+        "silver_ounce"
+      ],
+      "additionalProperties": false
     }
   },
   "required": [
@@ -2786,7 +2979,8 @@
     "source_count",
     "successful_sources",
     "sources",
-    "parsian"
+    "parsian",
+    "global_prices"
   ],
   "additionalProperties": false,
   "$defs": {
@@ -2990,7 +3184,8 @@
           "enum": [
             "source",
             "unknown",
-            null
+            null,
+            "provider_snapshot"
           ]
         },
         "weight_grams": {
@@ -2999,6 +3194,23 @@
         },
         "monitoring": {
           "$ref": "#/$defs/monitoring"
+        },
+        "snapshot_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "snapshot_age_seconds": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "snapshot_is_recent": {
+          "type": "boolean"
         }
       },
       "required": [
@@ -3018,7 +3230,10 @@
         "published_at",
         "observed_at",
         "time_basis",
-        "weight_grams"
+        "weight_grams",
+        "snapshot_at",
+        "snapshot_age_seconds",
+        "snapshot_is_recent"
       ],
       "additionalProperties": false
     },

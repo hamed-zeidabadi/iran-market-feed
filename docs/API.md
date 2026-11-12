@@ -43,6 +43,18 @@ for (const [asset, value] of Object.entries(feed.prices)) {
 فقط منابع فعال در `sources` هستند؛ هرکدام ساختار ثابت برای تمام هشت قلم دارند، حتی وقتی دادهٔ یک قلم موجود نباشد.
 `is_success` استخراج معتبر است؛ `is_fresh` تازگی، `is_close` نزدیکی به مرجع و `used_in_reference` حضور واقعی در میانه‌اند. این پرچم‌ها مستقل‌اند.
 `reference_eligible: false` اجازهٔ رأی به آن مسیر نمی‌دهد، حتی اگر معتبر و تازه باشد. دادهٔ بدون زمان اعلام نیز رأی ندارد.
+
+## اونس جهانی نقره و زمان snapshot
+
+هشت قلم اصلی `prices` تغییر نکرده‌اند. بخش `global_prices.silver_ounce` در سطح اصلی و در هر منبع، اونس جهانی نقره را با واحد `USD/troy_ounce` نگه می‌دارد. این دارایی با `prices.silver_999` (نقرهٔ داخلی ۹۹۹ به تومان/گرم) متفاوت است و به آن تبدیل نمی‌شود.
+
+دو مسیر `gold_api_xag` و `swissquote_xag` فقط مقایسه‌ای هستند. تا زمانی که هیچ رأی دارای زمان اعلام معتبر برای اونس نقره وجود نداشته باشد، مرجع `global_prices.silver_ounce.price` برابر `null` و وضعیت `unavailable` است. قیمت‌های دریافتی در `sources.<id>.global_prices.silver_ounce.price` قابل مشاهده‌اند؛ میانهٔ snapshotها به‌عنوان مرجع منتشر نمی‌شود.
+
+در Gold-API، `updatedAt` طبق مستندات رسمی زمان دریافت از بالادست است؛ در Swissquote نیز `ts` زمان snapshot است. برای هر دو فلز، این زمان‌ها اکنون در `snapshot_at` با `time_basis=provider_snapshot` می‌آیند؛ `published_at=null`، `is_fresh=false` و `reason=snapshot_time_only` است. `snapshot_age_seconds` سن snapshot در زمان تولید گزارش و `snapshot_is_recent` صرفاً قرار داشتن همین زمان در بازهٔ مجاز است، نه تأیید تازگی نرخ بالادست. snapshot قدیمی یا بیش از حد آینده `snapshot_is_recent=false` دارد. این فیلدها برای همهٔ مشاهدات وجود دارند؛ بدون snapshot به‌ترتیب `null`، `null` و `false` هستند.
+
+مسیر قبلی `gold_api` برای XAU هم مقایسه‌ای شد. در نتیجه شمار رأی‌های اونس طلا ممکن است کاهش یابد. `last_valid` قبلی اگر مشارکت‌کنندهٔ حذف‌شده یا تنزل‌یافته داشته باشد نگه داشته نمی‌شود. آمار منبع هنگام تغییر نوع مبنای زمان از نو شروع می‌شود تا cadence مبتنی بر snapshot با cadence اعلام واقعی ترکیب نشود.
+
+`hitobit_usdt` آخرین معاملهٔ USDTIRT را به تومان با زمان `Time` یونیکس میلی‌ثانیه می‌گیرد؛ زمان آینده/قدیمی طبق سیاست فعلی بررسی می‌شود. `quote_type=last_trade` و `reference_eligible=false` است و در مرجع midpoint تتر رأی ندارد. زمان نامعتبر `T` دفتر سفارش هیتوبیت یا `lastUpdateId` جایگزین زمان معامله نمی‌شوند.
 مرجع تتر فقط از `midpoint`های زمان‌دار و هم‌نوع ساخته می‌شود. نرخ `indicative` کانال جدید DollarGold صرفاً برای مقایسه است و `used_in_reference` آن false می‌ماند. صفحه و API نوبیتکس یک group هستند و یک رأی دارند.
 برای snapshot مستقیم WebSocket تبدیل، `http_status` برابر null است؛ در fallback مستند REST برابر 200 می‌شود و `quote_type` آن `last_trade` است. این fallback در مرجع midpoint رأی ندارد. وضعیت `parsed` فقط دریافت قابل استخراج را بیان می‌کند؛ `is_fresh` و زمان اعلام را جدا بررسی کنید. timestamp رویداد/معامله در `published_at` است و زمان دریافت در `observed_at` باقی می‌ماند.
 `difference = source price - final price` است. برای IRT، `difference_rial = difference × 10`؛ برای USD مقدار آن null است. `is_close` قدرمطلق اختلاف را با آستانهٔ تنظیم‌شده مقایسه می‌کند؛ در نبود قیمت یا مرجع، هر سه فیلد مقایسه null هستند.

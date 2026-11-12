@@ -143,11 +143,14 @@ def collect(source, timeout, attempts, diagnostics_dir=None):
 
 def load_config(path):
     config=json.loads(Path(path).read_text(encoding='utf-8'))
-    from .core import PARSIAN_ASSETS
+    from .core import PARSIAN_ASSETS, GLOBAL_ASSETS
     additional = config.get('parsian_assets', [])
     if len(additional) != len(set(additional)) or not set(additional) <= set(PARSIAN_ASSETS):
         raise ValueError('invalid Parsian asset weights')
-    assets = config['primary_assets'] + additional
+    global_assets = config.get('global_assets', [])
+    if len(global_assets) != len(set(global_assets)) or not set(global_assets) <= set(GLOBAL_ASSETS):
+        raise ValueError('invalid global assets')
+    assets = config['primary_assets'] + additional + global_assets
     ids=set(); urls=set()
     for s in config['sources']:
         if not re.fullmatch(r'[a-z0-9_]+', s['id']):raise ValueError('invalid source ID')

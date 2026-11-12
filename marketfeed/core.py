@@ -6,6 +6,7 @@ import re
 
 UTC = timezone.utc
 PRIMARY_ASSETS = ('gold_18k', 'silver_999', 'coin_bahar', 'coin_emami', 'coin_half', 'coin_quarter', 'gold_ounce', 'usdt')
+GLOBAL_ASSETS = ('silver_ounce',)
 DIGITS = str.maketrans('۰۱۲۳۴۵۶۷۸۹٠١٢٣٤٥٦٧٨٩٬٫', '01234567890123456789,.')
 ASSETS = {
  'gold_18k': {'label': 'طلای ۱۸ عیار', 'currency': 'IRT', 'unit': 'gram', 'purity': '750'},
@@ -15,6 +16,7 @@ ASSETS = {
  'coin_half': {'label': 'نیم سکه', 'currency': 'IRT', 'unit': 'coin'},
  'coin_quarter': {'label': 'ربع سکه', 'currency': 'IRT', 'unit': 'coin'},
  'gold_ounce': {'label': 'اونس طلا', 'currency': 'USD', 'unit': 'troy_ounce'},
+ 'silver_ounce': {'label': 'اونس جهانی نقره', 'currency': 'USD', 'unit': 'troy_ounce'},
  'gold_24k': {'label': 'طلای ۲۴ عیار', 'currency': 'IRT', 'unit': 'gram', 'purity': '999.9'},
  'coin_gram': {'label': 'سکه گرمی', 'currency': 'IRT', 'unit': 'coin'},
  'usd_cash': {'label': 'دلار آزاد', 'currency': 'IRT', 'unit': 'USD'},
@@ -65,6 +67,7 @@ class Quote:
     purity: str | None = None
     evidence_url: str = ''
     time_basis: str = 'unknown'
+    snapshot_at: str | None = None
 
     def json(self):
         return {**asdict(self), 'price': str(self.price)}

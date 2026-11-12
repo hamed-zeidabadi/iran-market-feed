@@ -23,6 +23,8 @@ def structural_reason(q):
 
 
 def time_reason(q, now, policy):
+    if q.time_basis == 'provider_snapshot':
+        return 'snapshot_time_only'
     if q.time_basis != 'source' or not q.published_at:
         return 'unknown_time'
     try:
@@ -53,7 +55,7 @@ def canonical_time(value):
 
 def build_report(config, quotes, health, now):
     clock = output_clock(now)
-    assets = config['primary_assets'] + config.get('parsian_assets', [])
+    assets = config['primary_assets'] + config.get('parsian_assets', []) + config.get('global_assets', [])
     sources_config = {s['id']: s for s in config['sources'] if s.get('enabled', True)}
     found = {}
     for q in quotes:
@@ -106,6 +108,9 @@ def build_report(config, quotes, health, now):
             valid = q is not None and structural_reason(q) is None
             reason = reasons.get((source_id, asset), 'missing')
             published = canonical_time(q.published_at) if q and q.time_basis == 'source' else None
+            snapshot = canonical_time(q.snapshot_at) if q else None
+            snapshot_age = (now - iso(snapshot)).total_seconds() if snapshot else None
+            policy = freshness_policy(config, q) if q else config['policy']
             diff = q.price - centers[asset] if valid and centers[asset] is not None else None
             compatible = q is not None and q.market == 'IR-national' and q.kind == ASSETS[asset].get('quote_type', 'indicative')
             detail[asset] = {
@@ -119,7 +124,11 @@ def build_report(config, quotes, health, now):
                 'used_in_reference': source_id in selected_by_asset[asset],
                 'reason': reason if reason else None if compatible else 'different_market_or_quote_type',
                 'published_at': published, 'observed_at': canonical_time(q.fetched_at) if q else None,
-                'time_basis': 'source' if published else 'unknown' if q else None,
+                'snapshot_at': snapshot,
+                'snapshot_age_seconds': max(0, snapshot_age) if snapshot_age is not None else None,
+                'snapshot_is_recent': bool(valid and snapshot_age is not None and
+                    -policy['future_tolerance_seconds'] <= snapshot_age <= policy['max_age_seconds']),
+                'time_basis': 'source' if published else 'provider_snapshot' if q and q.time_basis == 'provider_snapshot' else 'unknown' if q else None,
             }
             if 'weight_grams' in ASSETS[asset]:
                 detail[asset]['weight_grams'] = ASSETS[asset]['weight_grams']
@@ -131,12 +140,14 @@ def build_report(config, quotes, health, now):
             'error': state.get('error_type'),
             'prices': {a: detail[a] for a in config['primary_assets']},
             'parsian': {a: detail[a] for a in config.get('parsian_assets', [])},
+            'global_prices': {a: detail[a] for a in config.get('global_assets', [])},
         }
     return {
         'schema_version': 3, **clock, 'refresh_interval_seconds': 300,
         'method': 'median_one_vote_per_publisher',
         'prices': {a: prices[a] for a in config['primary_assets']},
         'parsian': {a: prices[a] for a in config.get('parsian_assets', [])},
+        'global_prices': {a: prices[a] for a in config.get('global_assets', [])},
         'source_summary': {key: s['is_success'] for key, s in sources.items()},
         'source_count': len(sources), 'successful_sources': sum(s['is_success'] for s in sources.values()),
         'sources': sources,

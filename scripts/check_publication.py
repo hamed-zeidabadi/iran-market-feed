@@ -26,7 +26,7 @@ def main():
             parse = lambda s: datetime.fromisoformat(s.replace('Z','+00:00'))
             ages = [(now-parse(item['observed_at'])).total_seconds()
                     for source in live['sources'].values()
-                    for section in ('prices','parsian') for item in source.get(section,{}).values()
+                    for section in ('prices','parsian','global_prices') for item in source.get(section,{}).values()
                     if item.get('observed_at')]
             print(json.dumps({'checked_at':now.isoformat(), 'snapshot':live['datetime'],
                               'report_to_publication_seconds':(now-parse(live['datetime'])).total_seconds(),
