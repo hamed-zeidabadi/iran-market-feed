@@ -56,7 +56,8 @@ class ContractTests(unittest.TestCase):
         gaps = [(minutes[(i + 1) % len(minutes)] - minute) % 60 for i, minute in enumerate(minutes)]
         self.assertEqual(gaps, [10] * 6)
         report = build_report(self.config, [], [], NOW)
-        self.assertEqual(report['refresh_interval_seconds'], gaps[0] * 60)
+        self.assertEqual(report['refresh_interval_seconds'], 300)
+        self.assertIn('crons = ["*/5 * * * *"]', Path('scheduler/cloudflare/wrangler.toml').read_text(encoding='utf-8'))
         self.assertIn('workflow_dispatch', workflow['on'])
         self.assertLess(sum(int(workflow['jobs'][j]['timeout-minutes']) for j in ('collect', 'deploy')), 10)
 

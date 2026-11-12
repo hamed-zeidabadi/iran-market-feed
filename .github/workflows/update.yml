@@ -24,11 +24,32 @@ jobs:
           cache: pip
       - run: pip install -r requirements-dev.txt
       - run: python -m unittest discover -s tests -v
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test tests/proxy.test.mjs
+      - uses: actions/cache/restore@v4
+        with:
+          path: .validation/monitoring.json
+          key: monitoring-${{ github.ref_name }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: monitoring-${{ github.ref_name }}-
       - run: python -m marketfeed
+        env:
+          MARKET_PROXY_URL: ${{ secrets.MARKET_PROXY_URL }}
+          MARKET_PROXY_SECRET: ${{ secrets.MARKET_PROXY_SECRET }}
+      - uses: actions/cache/save@v4
+        with:
+          path: .validation/monitoring.json
+          key: monitoring-${{ github.ref_name }}-${{ github.run_id }}-${{ github.run_attempt }}
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
           path: public
+      - uses: actions/upload-artifact@v4
+        with:
+          name: publication-input
+          path: public/api/prices.json
+          retention-days: 1
   deploy:
     needs: collect
     runs-on: ubuntu-latest
@@ -37,6 +58,14 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: publication-input
+          path: public/api
       - name: Deploy API snapshot
         id: deployment
         uses: actions/deploy-pages@v4
+      - name: Measure public snapshot delay
+        continue-on-error: true
+        run: python scripts/check_publication.py --url "${{ steps.deployment.outputs.page_url }}api/prices.json"

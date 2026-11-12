@@ -24,6 +24,28 @@ def atomic_json(path, data):
 
 
 def read_source(source, timeout):
+    if source['id'] in ('nobitex_usdt', 'ramzinex_usdt'):
+        try:
+            return read_https(source['url'], timeout)
+        except HTTPError as exc:
+            if exc.code != 403 or not os.environ.get('MARKET_PROXY_URL') or not os.environ.get('MARKET_PROXY_SECRET'):
+                raise
+            base = os.environ['MARKET_PROXY_URL']
+            parsed = urlparse(base)
+            if parsed.scheme != 'https' or not parsed.hostname or parsed.username or parsed.password or parsed.query or parsed.fragment or parsed.path not in ('', '/'):
+                raise ValueError('invalid private proxy origin') from None
+            request = Request(base.rstrip('/') + '/' + source['id'], headers={
+                'X-Market-Secret': os.environ['MARKET_PROXY_SECRET'], 'Accept': 'application/json'})
+            # No redirects: credentials must never leave the configured origin.
+            from urllib.request import build_opener, HTTPRedirectHandler
+            class NoRedirect(HTTPRedirectHandler):
+                def redirect_request(self, req, fp, code, msg, headers, newurl):
+                    return None
+            with build_opener(NoRedirect).open(request, timeout=timeout) as response:
+                raw = response.read(2_000_001)
+                if len(raw) > 2_000_000:
+                    raise ValueError('response too large')
+                return raw, response.status
     if source['adapter'] == 'tgju_snapshot':
         # Same public snapshot requested by TGJU's homepage JavaScript.
         return read_https(source['url'] + '?rev=' + str(time.time_ns()), timeout)
@@ -150,6 +172,21 @@ def load_config(path):
     for asset in assets:
         if config['tolerances'][asset]<0:raise ValueError('invalid tolerance')
     if any(not 0<=r<=0.05 for r in config.get('tolerance_ratios',{}).values()):raise ValueError('invalid tolerance ratio')
+    for owner in [config, *config['sources']]:
+        for asset, policy in owner.get('asset_policies', {}).items():
+            if asset not in assets or set(policy) - {'max_age_seconds'}:
+                raise ValueError('freshness overrides only support configured assets and max_age_seconds')
+            age = policy.get('max_age_seconds')
+            if isinstance(age, bool) or not isinstance(age, (int, float)) or not 0 < age <= 86400:
+                raise ValueError('invalid measured freshness override')
+    for asset, session in config.get('market_sessions', {}).items():
+        from datetime import time as clock_time, date
+        if asset not in assets or asset == 'usdt' or not session.get('weekdays') or not all(type(day) is int and 0 <= day <= 6 for day in session['weekdays']):
+            raise ValueError('invalid market calendar')
+        if clock_time.fromisoformat(session['open']) >= clock_time.fromisoformat(session['close']):
+            raise ValueError('market session must open before closing')
+        for day in session.get('closed_dates', []):
+            date.fromisoformat(day)
     return config
 
 
@@ -162,9 +199,12 @@ def main():
     cli.add_argument('--workers',type=int,default=6)
     cli.add_argument('--timeout',type=float,default=15)
     cli.add_argument('--diagnostics-dir', help='Private, temporary response inspection directory; never under public/')
+    cli.add_argument('--state', default='.validation/monitoring.json', help='Private bounded operational state')
     args=cli.parse_args();config=load_config(args.config)
     if args.diagnostics_dir and Path(args.diagnostics_dir).resolve().is_relative_to(Path('public').resolve()):
         cli.error('diagnostics must be outside public/')
+    if Path(args.state).resolve().is_relative_to(Path('public').resolve()):
+        cli.error('monitoring state must be outside public/')
     if args.list:
         for s in config['sources']:print(s['id'],s['url'])
         return
@@ -188,6 +228,15 @@ def main():
     for s in config['sources']:
         if s['id'] not in {h['id'] for h in health}:health.append({'id':s['id'],'status':'skipped'})
     output=build_report(config,quotes,health,datetime.now(timezone.utc))
+    from .monitoring import enrich
+    try:
+        previous = json.loads(Path(args.state).read_text(encoding='utf-8'))
+        if not isinstance(previous, dict):
+            previous = {}
+    except (OSError, ValueError):
+        previous = {}
+    state = enrich(output, previous, config, datetime.now(timezone.utc))
+    atomic_json(Path(args.state), state)
     atomic_json(Path(args.output),output)
     print('Saved',args.output,'successful routes:',output['successful_sources'],'/',output['source_count'])
 

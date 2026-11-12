@@ -1,0 +1,9 @@
+name = "iran-market-feed-private-proxy"
+main = "worker.mjs"
+compatibility_date = "2026-11-12"
+workers_dev = true
+preview_urls = false
+
+# Set PROXY_SECRET with wrangler secret put; never commit it.
+[observability]
+enabled = false

@@ -64,7 +64,7 @@ def build_report(config, quotes, health, now):
                           iso(x.fetched_at) if canonical_time(x.fetched_at) else datetime.min.replace(tzinfo=timezone.utc), str(x.price))
         if key not in found or rank(q) > rank(found[key]):
             found[key] = q
-    reasons = {key: structural_reason(q) or time_reason(q, now, config['policy']) for key, q in found.items()}
+    reasons = {key: structural_reason(q) or time_reason(q, now, freshness_policy(config, q)) for key, q in found.items()}
     prices, selected_by_asset, centers = {}, {}, {}
     for asset in assets:
         by_group = {}
@@ -86,6 +86,10 @@ def build_report(config, quotes, health, now):
             'label': spec['label'], 'price': numeric(center), 'currency': spec['currency'], 'unit': spec['unit'],
             'purity': spec.get('purity'), 'quote_type': spec.get('quote_type', 'indicative'), 'status': status, 'direction': None, 'source_count': len(selected),
             'published_at': canonical_time(max((q.published_at for q in selected), key=iso)) if selected else None,
+            'oldest_contributor_at': canonical_time(min((q.published_at for q in selected), key=iso)) if selected else None,
+            'max_contributor_age_seconds': max(0, max((now - iso(q.published_at)).total_seconds() for q in selected)) if selected else None,
+            'reference_range': {'min': numeric(min(q.price for q in selected)), 'max': numeric(max(q.price for q in selected))} if selected else None,
+            'quality_warnings': (['source_disagreement'] if status == 'disputed' else []) + (['insufficient_groups'] if len(selected) < config['policy']['min_groups'] else []),
             'observed_at': max((canonical_time(q.fetched_at) for q in selected), default=None),
             'uses_observed_time': False,
             'spread_percent': numeric(spread * 100) if spread is not None else None,
@@ -129,7 +133,7 @@ def build_report(config, quotes, health, now):
             'parsian': {a: detail[a] for a in config.get('parsian_assets', [])},
         }
     return {
-        'schema_version': 3, **clock, 'refresh_interval_seconds': 600,
+        'schema_version': 3, **clock, 'refresh_interval_seconds': 300,
         'method': 'median_one_vote_per_publisher',
         'prices': {a: prices[a] for a in config['primary_assets']},
         'parsian': {a: prices[a] for a in config.get('parsian_assets', [])},
@@ -137,3 +141,12 @@ def build_report(config, quotes, health, now):
         'source_count': len(sources), 'successful_sources': sum(s['is_success'] for s in sources.values()),
         'sources': sources,
     }
+
+
+def freshness_policy(config, q):
+    """Explicit measured overrides only; the existing default remains unchanged."""
+    policy = dict(config['policy'])
+    policy.update(config.get('asset_policies', {}).get(q.asset, {}))
+    source = next(s for s in config['sources'] if s['id'] == q.source)
+    policy.update(source.get('asset_policies', {}).get(q.asset, {}))
+    return policy

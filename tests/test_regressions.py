@@ -130,7 +130,7 @@ class RegressionTests(unittest.TestCase):
             output = Path(directory) / 'prices.json'
             def collected(source, *args):
                 return [quote(source['id'], {'a': 100, 'b': 101, 'c': 102}[source['id']])], {'id': source['id'], 'status': 'parsed', 'http_status': 200}
-            with patch('sys.argv', ['marketfeed', '--config', str(cfg_path), '--output', str(output)]), \
+            with patch('sys.argv', ['marketfeed', '--config', str(cfg_path), '--output', str(output), '--state', str(Path(directory) / 'state.json')]), \
                  patch('marketfeed.__main__.collect', side_effect=collected), \
                  patch('marketfeed.__main__.datetime') as dt, contextlib.redirect_stdout(io.StringIO()):
                 dt.now.return_value = NOW

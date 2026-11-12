@@ -26,7 +26,7 @@
       "const": "Asia/Tehran"
     },
     "refresh_interval_seconds": {
-      "const": 600
+      "const": 300
     },
     "method": {
       "const": "median_one_vote_per_publisher"
@@ -107,6 +107,24 @@
                 "type": "string"
               },
               "uniqueItems": true
+            },
+            "oldest_contributor_at": {
+              "$ref": "#/$defs/oldest_contributor_at"
+            },
+            "max_contributor_age_seconds": {
+              "$ref": "#/$defs/max_contributor_age_seconds"
+            },
+            "reference_range": {
+              "$ref": "#/$defs/reference_range"
+            },
+            "quality_warnings": {
+              "$ref": "#/$defs/quality_warnings"
+            },
+            "market": {
+              "$ref": "#/$defs/market"
+            },
+            "last_valid": {
+              "$ref": "#/$defs/last_valid"
             }
           },
           "required": [
@@ -124,7 +142,11 @@
             "uses_observed_time",
             "spread_percent",
             "tolerance",
-            "contributors"
+            "contributors",
+            "oldest_contributor_at",
+            "max_contributor_age_seconds",
+            "reference_range",
+            "quality_warnings"
           ],
           "additionalProperties": false
         },
@@ -201,6 +223,24 @@
                 "type": "string"
               },
               "uniqueItems": true
+            },
+            "oldest_contributor_at": {
+              "$ref": "#/$defs/oldest_contributor_at"
+            },
+            "max_contributor_age_seconds": {
+              "$ref": "#/$defs/max_contributor_age_seconds"
+            },
+            "reference_range": {
+              "$ref": "#/$defs/reference_range"
+            },
+            "quality_warnings": {
+              "$ref": "#/$defs/quality_warnings"
+            },
+            "market": {
+              "$ref": "#/$defs/market"
+            },
+            "last_valid": {
+              "$ref": "#/$defs/last_valid"
             }
           },
           "required": [
@@ -218,7 +258,11 @@
             "uses_observed_time",
             "spread_percent",
             "tolerance",
-            "contributors"
+            "contributors",
+            "oldest_contributor_at",
+            "max_contributor_age_seconds",
+            "reference_range",
+            "quality_warnings"
           ],
           "additionalProperties": false
         },
@@ -295,6 +339,24 @@
                 "type": "string"
               },
               "uniqueItems": true
+            },
+            "oldest_contributor_at": {
+              "$ref": "#/$defs/oldest_contributor_at"
+            },
+            "max_contributor_age_seconds": {
+              "$ref": "#/$defs/max_contributor_age_seconds"
+            },
+            "reference_range": {
+              "$ref": "#/$defs/reference_range"
+            },
+            "quality_warnings": {
+              "$ref": "#/$defs/quality_warnings"
+            },
+            "market": {
+              "$ref": "#/$defs/market"
+            },
+            "last_valid": {
+              "$ref": "#/$defs/last_valid"
             }
           },
           "required": [
@@ -312,7 +374,11 @@
             "uses_observed_time",
             "spread_percent",
             "tolerance",
-            "contributors"
+            "contributors",
+            "oldest_contributor_at",
+            "max_contributor_age_seconds",
+            "reference_range",
+            "quality_warnings"
           ],
           "additionalProperties": false
         },
@@ -389,6 +455,24 @@
                 "type": "string"
               },
               "uniqueItems": true
+            },
+            "oldest_contributor_at": {
+              "$ref": "#/$defs/oldest_contributor_at"
+            },
+            "max_contributor_age_seconds": {
+              "$ref": "#/$defs/max_contributor_age_seconds"
+            },
+            "reference_range": {
+              "$ref": "#/$defs/reference_range"
+            },
+            "quality_warnings": {
+              "$ref": "#/$defs/quality_warnings"
+            },
+            "market": {
+              "$ref": "#/$defs/market"
+            },
+            "last_valid": {
+              "$ref": "#/$defs/last_valid"
             }
           },
           "required": [
@@ -406,7 +490,11 @@
             "uses_observed_time",
             "spread_percent",
             "tolerance",
-            "contributors"
+            "contributors",
+            "oldest_contributor_at",
+            "max_contributor_age_seconds",
+            "reference_range",
+            "quality_warnings"
           ],
           "additionalProperties": false
         },
@@ -483,6 +571,24 @@
                 "type": "string"
               },
               "uniqueItems": true
+            },
+            "oldest_contributor_at": {
+              "$ref": "#/$defs/oldest_contributor_at"
+            },
+            "max_contributor_age_seconds": {
+              "$ref": "#/$defs/max_contributor_age_seconds"
+            },
+            "reference_range": {
+              "$ref": "#/$defs/reference_range"
+            },
+            "quality_warnings": {
+              "$ref": "#/$defs/quality_warnings"
+            },
+            "market": {
+              "$ref": "#/$defs/market"
+            },
+            "last_valid": {
+              "$ref": "#/$defs/last_valid"
             }
           },
           "required": [
@@ -500,7 +606,11 @@
             "uses_observed_time",
             "spread_percent",
             "tolerance",
-            "contributors"
+            "contributors",
+            "oldest_contributor_at",
+            "max_contributor_age_seconds",
+            "reference_range",
+            "quality_warnings"
           ],
           "additionalProperties": false
         },
@@ -577,6 +687,24 @@
                 "type": "string"
               },
               "uniqueItems": true
+            },
+            "oldest_contributor_at": {
+              "$ref": "#/$defs/oldest_contributor_at"
+            },
+            "max_contributor_age_seconds": {
+              "$ref": "#/$defs/max_contributor_age_seconds"
+            },
+            "reference_range": {
+              "$ref": "#/$defs/reference_range"
+            },
+            "quality_warnings": {
+              "$ref": "#/$defs/quality_warnings"
+            },
+            "market": {
+              "$ref": "#/$defs/market"
+            },
+            "last_valid": {
+              "$ref": "#/$defs/last_valid"
             }
           },
           "required": [
@@ -594,7 +722,11 @@
             "uses_observed_time",
             "spread_percent",
             "tolerance",
-            "contributors"
+            "contributors",
+            "oldest_contributor_at",
+            "max_contributor_age_seconds",
+            "reference_range",
+            "quality_warnings"
           ],
           "additionalProperties": false
         },
@@ -671,6 +803,24 @@
                 "type": "string"
               },
               "uniqueItems": true
+            },
+            "oldest_contributor_at": {
+              "$ref": "#/$defs/oldest_contributor_at"
+            },
+            "max_contributor_age_seconds": {
+              "$ref": "#/$defs/max_contributor_age_seconds"
+            },
+            "reference_range": {
+              "$ref": "#/$defs/reference_range"
+            },
+            "quality_warnings": {
+              "$ref": "#/$defs/quality_warnings"
+            },
+            "market": {
+              "$ref": "#/$defs/market"
+            },
+            "last_valid": {
+              "$ref": "#/$defs/last_valid"
             }
           },
           "required": [
@@ -688,7 +838,11 @@
             "uses_observed_time",
             "spread_percent",
             "tolerance",
-            "contributors"
+            "contributors",
+            "oldest_contributor_at",
+            "max_contributor_age_seconds",
+            "reference_range",
+            "quality_warnings"
           ],
           "additionalProperties": false
         },
@@ -765,6 +919,24 @@
                 "type": "string"
               },
               "uniqueItems": true
+            },
+            "oldest_contributor_at": {
+              "$ref": "#/$defs/oldest_contributor_at"
+            },
+            "max_contributor_age_seconds": {
+              "$ref": "#/$defs/max_contributor_age_seconds"
+            },
+            "reference_range": {
+              "$ref": "#/$defs/reference_range"
+            },
+            "quality_warnings": {
+              "$ref": "#/$defs/quality_warnings"
+            },
+            "market": {
+              "$ref": "#/$defs/market"
+            },
+            "last_valid": {
+              "$ref": "#/$defs/last_valid"
             }
           },
           "required": [
@@ -782,7 +954,11 @@
             "uses_observed_time",
             "spread_percent",
             "tolerance",
-            "contributors"
+            "contributors",
+            "oldest_contributor_at",
+            "max_contributor_age_seconds",
+            "reference_range",
+            "quality_warnings"
           ],
           "additionalProperties": false
         }
@@ -943,6 +1119,9 @@
                       "unknown",
                       null
                     ]
+                  },
+                  "monitoring": {
+                    "$ref": "#/$defs/monitoring"
                   }
                 },
                 "required": [
@@ -1046,6 +1225,9 @@
                       "unknown",
                       null
                     ]
+                  },
+                  "monitoring": {
+                    "$ref": "#/$defs/monitoring"
                   }
                 },
                 "required": [
@@ -1149,6 +1331,9 @@
                       "unknown",
                       null
                     ]
+                  },
+                  "monitoring": {
+                    "$ref": "#/$defs/monitoring"
                   }
                 },
                 "required": [
@@ -1252,6 +1437,9 @@
                       "unknown",
                       null
                     ]
+                  },
+                  "monitoring": {
+                    "$ref": "#/$defs/monitoring"
                   }
                 },
                 "required": [
@@ -1355,6 +1543,9 @@
                       "unknown",
                       null
                     ]
+                  },
+                  "monitoring": {
+                    "$ref": "#/$defs/monitoring"
                   }
                 },
                 "required": [
@@ -1458,6 +1649,9 @@
                       "unknown",
                       null
                     ]
+                  },
+                  "monitoring": {
+                    "$ref": "#/$defs/monitoring"
                   }
                 },
                 "required": [
@@ -1561,6 +1755,9 @@
                       "unknown",
                       null
                     ]
+                  },
+                  "monitoring": {
+                    "$ref": "#/$defs/monitoring"
                   }
                 },
                 "required": [
@@ -1664,6 +1861,9 @@
                       "unknown",
                       null
                     ]
+                  },
+                  "monitoring": {
+                    "$ref": "#/$defs/monitoring"
                   }
                 },
                 "required": [
@@ -2667,6 +2867,24 @@
         "weight_grams": {
           "type": "number",
           "exclusiveMinimum": 0
+        },
+        "oldest_contributor_at": {
+          "$ref": "#/$defs/oldest_contributor_at"
+        },
+        "max_contributor_age_seconds": {
+          "$ref": "#/$defs/max_contributor_age_seconds"
+        },
+        "reference_range": {
+          "$ref": "#/$defs/reference_range"
+        },
+        "quality_warnings": {
+          "$ref": "#/$defs/quality_warnings"
+        },
+        "market": {
+          "$ref": "#/$defs/market"
+        },
+        "last_valid": {
+          "$ref": "#/$defs/last_valid"
         }
       },
       "required": [
@@ -2685,7 +2903,11 @@
         "spread_percent",
         "tolerance",
         "contributors",
-        "weight_grams"
+        "weight_grams",
+        "oldest_contributor_at",
+        "max_contributor_age_seconds",
+        "reference_range",
+        "quality_warnings"
       ],
       "additionalProperties": false
     },
@@ -2774,6 +2996,9 @@
         "weight_grams": {
           "type": "number",
           "exclusiveMinimum": 0
+        },
+        "monitoring": {
+          "$ref": "#/$defs/monitoring"
         }
       },
       "required": [
@@ -2796,6 +3021,203 @@
         "weight_grams"
       ],
       "additionalProperties": false
+    },
+    "oldest_contributor_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "max_contributor_age_seconds": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "reference_range": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "min": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "max": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        }
+      },
+      "required": [
+        "min",
+        "max"
+      ],
+      "additionalProperties": false
+    },
+    "quality_warnings": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "source_disagreement",
+          "insufficient_groups"
+        ]
+      },
+      "uniqueItems": true
+    },
+    "market": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "enum": [
+            "open",
+            "closed",
+            "unknown"
+          ]
+        },
+        "basis": {
+          "enum": [
+            "24/7",
+            "no_verified_calendar",
+            "configured_calendar"
+          ]
+        }
+      },
+      "required": [
+        "status",
+        "basis"
+      ],
+      "additionalProperties": false
+    },
+    "last_valid": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "price": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "published_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "oldest_contributor_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "contributors": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "accepted_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "age_seconds": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        }
+      },
+      "required": [
+        "price",
+        "published_at",
+        "oldest_contributor_at",
+        "contributors",
+        "accepted_at",
+        "age_seconds"
+      ],
+      "additionalProperties": false
+    },
+    "monitoring": {
+      "type": "object",
+      "properties": {
+        "samples": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "success_ratio": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1
+        },
+        "fresh_ratio": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1
+        },
+        "publication_interval_samples": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 128
+        },
+        "median_publication_interval_seconds": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "unchanged_seconds": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "suspicious_unchanged": {
+          "type": "boolean"
+        },
+        "publication_age_seconds": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "fetch_to_report_seconds": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "samples",
+        "success_ratio",
+        "fresh_ratio",
+        "publication_interval_samples",
+        "median_publication_interval_seconds",
+        "unchanged_seconds",
+        "suspicious_unchanged",
+        "publication_age_seconds",
+        "fetch_to_report_seconds"
+      ]
     }
   }
 }
