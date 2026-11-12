@@ -25,6 +25,7 @@ crons = ["*/5 * * * *"]
 GITHUB_REPOSITORY = "hamed-zeidabadi/iran-market-feed"
 WORKFLOW_FILE = "update.yml"
 WORKFLOW_REF = "main"
+AUDIT_URL = "https://iran-market-feed-audit.zeidabadi73.workers.dev"
 
 # Secret, set with: npx wrangler secret put GITHUB_TOKEN
 # Fine-grained PAT limited to this repository with only Actions: Read and write.

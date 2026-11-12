@@ -27,7 +27,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: node --test tests/proxy.test.mjs tests/audit-worker.test.mjs
+      - run: node --test tests/proxy.test.mjs tests/audit-worker.test.mjs tests/scheduler.test.mjs
       - uses: actions/cache/restore@v4
         with:
           path: .validation/monitoring.json
