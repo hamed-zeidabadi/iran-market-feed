@@ -46,4 +46,8 @@ export async function handle(request, env, fetchImpl = fetch) {
     return new Response('Upstream unavailable', {status: 502});
   }
 }
-export default {fetch: handle};
+export default {
+  fetch(request, env) {
+    return handle(request, env);
+  },
+};

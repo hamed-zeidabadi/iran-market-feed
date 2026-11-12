@@ -1,9 +1,17 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {handle, TARGETS} from '../scheduler/proxy/worker.mjs';
+import worker, {handle, TARGETS} from '../scheduler/proxy/worker.mjs';
 
 const env = {PROXY_SECRET:'test-private-secret'};
 const request = (path, method='GET') => new Request('https://proxy.test'+path, {method,headers:{'X-Market-Secret':env.PROXY_SECRET}});
+test('Cloudflare entrypoint does not use execution context as fetch function',async()=>{
+  const original = globalThis.fetch;
+  globalThis.fetch = async()=>new Response('{"status":"ok"}');
+  try {
+    const response = await worker.fetch(request('/nobitex_usdt'),env,{waitUntil(){}});
+    assert.equal(response.status,200);
+  } finally { globalThis.fetch=original; }
+});
 test('unauthenticated and unconfigured requests never fetch',async()=>{
   const noFetch=()=>assert.fail('unexpected fetch');
   assert.equal((await handle(new Request('https://proxy.test/nobitex_usdt'),env,noFetch)).status,404);

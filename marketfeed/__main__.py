@@ -35,7 +35,8 @@ def read_source(source, timeout):
             if parsed.scheme != 'https' or not parsed.hostname or parsed.username or parsed.password or parsed.query or parsed.fragment or parsed.path not in ('', '/'):
                 raise ValueError('invalid private proxy origin') from None
             request = Request(base.rstrip('/') + '/' + source['id'], headers={
-                'X-Market-Secret': os.environ['MARKET_PROXY_SECRET'], 'Accept': 'application/json'})
+                'X-Market-Secret': os.environ['MARKET_PROXY_SECRET'], 'Accept': 'application/json',
+                'User-Agent': 'IranMarketFeed/0.1 (open-source research collector)'})
             # No redirects: credentials must never leave the configured origin.
             from urllib.request import build_opener, HTTPRedirectHandler
             class NoRedirect(HTTPRedirectHandler):

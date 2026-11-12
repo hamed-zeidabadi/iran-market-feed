@@ -134,13 +134,13 @@
       "url": "https://apiv2.nobitex.ir/v3/orderbook/USDTIRT",
       "group": "nobitex",
       "adapter": "nobitex",
-      "enabled": false,
+      "enabled": true,
       "reference_eligible": true,
       "assets": [
         "usdt"
       ],
       "kind": "midpoint",
-      "disabled_reason": "Repeated HTTP 403 in local and GitHub validation; receiver retained for recovery"
+      "note": "Re-enabled after fresh direct orderbook passed GitHub Actions probe 43209409946. Private proxy fallback is configured for HTTP 403."
     },
     {
       "id": "ontala",

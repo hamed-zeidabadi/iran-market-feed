@@ -22,6 +22,7 @@ class ProxyCollectorTests(unittest.TestCase):
         req = opener.open.call_args.args[0]
         self.assertEqual(req.full_url,'https://private.test/ramzinex_usdt')
         self.assertEqual(req.get_header('X-market-secret'),'secret')
+        self.assertTrue(req.get_header('User-agent').startswith('IranMarketFeed/'))
 
     def test_429_is_not_routed_through_proxy(self):
         with patch('marketfeed.__main__.read_https', side_effect=HTTPError(self.source['url'],429,'Limited',{},None)), \

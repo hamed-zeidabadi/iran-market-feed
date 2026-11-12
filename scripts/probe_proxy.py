@@ -23,7 +23,9 @@ if __name__ == '__main__':
     for sid in ('nobitex_usdt','ramzinex_usdt'):
         source = next(s for s in config['sources'] if s['id'] == sid)
         try:
-            req = Request(origin.rstrip('/')+'/'+sid,headers={'X-Market-Secret':os.environ['MARKET_PROXY_SECRET']})
+            req = Request(origin.rstrip('/')+'/'+sid,headers={
+                'X-Market-Secret':os.environ['MARKET_PROXY_SECRET'],
+                'User-Agent':'IranMarketFeed/0.1 (open-source research collector)'})
             with build_opener(NoRedirect).open(req,timeout=20) as response:
                 body = response.read(2_000_001)
                 if len(body)>2_000_000: raise ValueError('response too large')
