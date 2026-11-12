@@ -57,7 +57,7 @@ jobs:
           name: collection-incidents
           path: .validation/incidents.jsonl
           include-hidden-files: true
-          retention-days: 90
+          retention-days: 30
       - uses: actions/cache/save@v4
         with:
           path: .validation/monitoring.json
@@ -104,7 +104,7 @@ jobs:
           name: publication-incidents
           path: .validation/publication.jsonl
           include-hidden-files: true
-          retention-days: 90
+          retention-days: 30
   audit_status:
     needs: [collect, deploy]
     if: always()
@@ -133,4 +133,4 @@ jobs:
           name: workflow-incidents
           path: .validation/workflow.jsonl
           include-hidden-files: true
-          retention-days: 90
+          retention-days: 30

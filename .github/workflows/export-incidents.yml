@@ -40,4 +40,4 @@ jobs:
           name: incident-history
           path: .validation/export/
           include-hidden-files: true
-          retention-days: 90
+          retention-days: 30
