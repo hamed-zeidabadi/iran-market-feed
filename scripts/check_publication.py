@@ -5,12 +5,15 @@ import json
 from pathlib import Path
 import time
 from urllib.request import Request, urlopen
+from marketfeed.audit import Journal
 
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--url', required=True)
     args = parser.parse_args()
+    journal = Journal('.validation/publication.jsonl', phase='publication')
+    journal.emit('publication_check_started')
     expected = json.loads(Path('public/api/prices.json').read_text(encoding='utf-8'))
     for attempt in range(6):
         try:
@@ -28,12 +31,18 @@ def main():
                     for source in live['sources'].values()
                     for section in ('prices','parsian','global_prices') for item in source.get(section,{}).values()
                     if item.get('observed_at')]
-            print(json.dumps({'checked_at':now.isoformat(), 'snapshot':live['datetime'],
+            metrics={'checked_at':now.isoformat(), 'snapshot':live['datetime'],
                               'report_to_publication_seconds':(now-parse(live['datetime'])).total_seconds(),
-                              'max_fetch_to_publication_seconds':max(ages,default=None)}))
+                              'max_fetch_to_publication_seconds':max(ages,default=None)}
+            journal.emit('publication_confirmed', **metrics)
+            if metrics['report_to_publication_seconds'] > 300:
+                journal.emit('publication_delayed','warning',**metrics)
+            print(json.dumps(metrics))
             return
         except (OSError, ValueError, KeyError) as exc:
+            journal.emit('publication_check_retry','warning',attempt=attempt+1,error_type=type(exc).__name__,http_status=getattr(exc,'code',None))
             if attempt == 5:
+                journal.emit('publication_not_confirmed','error',snapshot=expected['datetime'])
                 raise RuntimeError('publication measurement failed') from exc
             time.sleep(5)
 

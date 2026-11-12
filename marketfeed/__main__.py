@@ -14,6 +14,8 @@ from urllib.parse import urlparse
 from websocket import create_connection, WebSocketException
 from .adapters import extract
 from .report import build_report
+from .audit import Journal, TRANSPORTS, transport, record_collection
+ACTIVE_JOURNAL = None
 
 
 def atomic_json(path, data):
@@ -42,11 +44,16 @@ def read_source(source, timeout):
             class NoRedirect(HTTPRedirectHandler):
                 def redirect_request(self, req, fp, code, msg, headers, newurl):
                     return None
-            with build_opener(NoRedirect).open(request, timeout=timeout) as response:
-                raw = response.read(2_000_001)
-                if len(raw) > 2_000_000:
-                    raise ValueError('response too large')
-                return raw, response.status
+            try:
+                with build_opener(NoRedirect).open(request, timeout=timeout) as response:
+                    raw = response.read(2_000_001)
+                    if len(raw) > 2_000_000:
+                        raise ValueError('response too large')
+                    transport('private_proxy', response.status)
+                    return raw, response.status
+            except Exception as exc:
+                transport('private_proxy', getattr(exc, 'code', None), exc)
+                raise
     if source['adapter'] == 'tgju_snapshot':
         # Same public snapshot requested by TGJU's homepage JavaScript.
         return read_https(source['url'] + '?rev=' + str(time.time_ns()), timeout)
@@ -58,8 +65,11 @@ def read_source(source, timeout):
                           content_type='application/json')
     if source['adapter']=='tabdeal_depth':
         try:
-            return read_tabdeal_stream(source, timeout)
-        except (WebSocketException, OSError, TimeoutError):
+            result = read_tabdeal_stream(source, timeout)
+            transport('websocket')
+            return result
+        except (WebSocketException, OSError, TimeoutError) as exc:
+            transport('websocket', error=exc)
             from .new_sources import TABDEAL_TRADES_URL
             return read_https(TABDEAL_TRADES_URL, timeout)
     return read_https(source['url'], timeout)
@@ -104,14 +114,35 @@ def read_https(url, timeout, data=None, content_type=None):
     if content_type:
         headers['Content-Type'] = content_type
     req = Request(url, headers=headers, data=data)
-    with urlopen(req, timeout=timeout) as response:
-        raw = response.read(2_000_001)
-        if len(raw) > 2_000_000:
-            raise ValueError('response too large')
-        return raw, response.status
+    try:
+        with urlopen(req, timeout=timeout) as response:
+            raw = response.read(2_000_001)
+            if len(raw) > 2_000_000:
+                raise ValueError('response too large')
+            transport('direct_https', response.status)
+            return raw, response.status
+    except Exception as exc:
+        transport('direct_https', getattr(exc, 'code', None), exc)
+        raise
 
 
 def collect(source, timeout, attempts, diagnostics_dir=None):
+    trace = []
+    token = TRANSPORTS.set(trace)
+    started = time.monotonic()
+    try:
+        quotes, health = _collect(source, timeout, attempts, diagnostics_dir)
+    except Exception as exc:
+        quotes, health = [], {'id':source['id'], 'status':'parser_error', 'error_type':type(exc).__name__,
+                              'fetched_at':datetime.now(timezone.utc).isoformat()}
+    finally:
+        TRANSPORTS.reset(token)
+    health['transports'] = trace
+    health['latency_ms'] = round((time.monotonic()-started)*1000)
+    return quotes, health
+
+
+def _collect(source, timeout, attempts, diagnostics_dir=None):
     started = time.monotonic()
     fetched = datetime.now(timezone.utc).isoformat()
     for attempt in range(attempts):
@@ -128,6 +159,7 @@ def collect(source, timeout, attempts, diagnostics_dir=None):
                 'status': 'parsed' if quotes else 'no_quotes', 'quote_count': len(quotes),
                 'fetched_at': fetched, 'latency_ms': round((time.monotonic()-started)*1000),
                 'http_status': http_status,
+                'attempts': attempt + 1,
                 'body_sha256': hashlib.sha256(raw).hexdigest(),
                 'note': 'parsed does not imply fresh or independent'}
         except (HTTPError, URLError, TimeoutError, OSError, ValueError, WebSocketException) as exc:
@@ -138,7 +170,7 @@ def collect(source, timeout, attempts, diagnostics_dir=None):
             return [], {'id': source['id'], 'status': 'error', 'error_type': type(exc).__name__,
                         'error_reason': str(reason)[:200],
                         'http_status': exc.code if isinstance(exc, HTTPError) else None,
-                        'fetched_at': fetched}
+                        'attempts': attempt + 1, 'fetched_at': datetime.now(timezone.utc).isoformat()}
     return [], {'id': source['id'], 'status': 'error'}
 
 
@@ -195,6 +227,7 @@ def load_config(path):
 
 
 def main():
+    global ACTIVE_JOURNAL
     cli=argparse.ArgumentParser(description='Iran Market Feed: one JSON endpoint, no history')
     cli.add_argument('--config',default='sources.json')
     cli.add_argument('--output',default='public/api/prices.json')
@@ -204,6 +237,7 @@ def main():
     cli.add_argument('--timeout',type=float,default=15)
     cli.add_argument('--diagnostics-dir', help='Private, temporary response inspection directory; never under public/')
     cli.add_argument('--state', default='.validation/monitoring.json', help='Private bounded operational state')
+    cli.add_argument('--audit-file', help='Private JSONL incident journal; defaults beside operational state')
     args=cli.parse_args();config=load_config(args.config)
     if args.diagnostics_dir and Path(args.diagnostics_dir).resolve().is_relative_to(Path('public').resolve()):
         cli.error('diagnostics must be outside public/')
@@ -218,6 +252,16 @@ def main():
         if not wanted<={s['id'] for s in selected}:cli.error('unknown or disabled source')
         selected=[s for s in selected if s['id'] in wanted]
     if not 1<=args.workers<=16 or not 0<args.timeout<=60:cli.error('invalid resource limits')
+    journal = Journal(args.audit_file or Path(args.state).parent / 'incidents.jsonl', config=config)
+    ACTIVE_JOURNAL = journal
+    journal.emit('collection_started', partial_run=bool(args.only), sources=[s['id'] for s in selected])
+    restore_status = Path(args.state).parent / 'audit-restore.json'
+    if restore_status.exists():
+        try:
+            status = json.loads(restore_status.read_text(encoding='utf-8'))
+            journal.emit('archive_state_restore_failed', 'warning', error_type=status.get('error_type'), http_status=status.get('http_status'))
+        except (OSError, ValueError):
+            journal.emit('archive_state_restore_failed', 'warning')
     quotes=[];health=[]
     with ThreadPoolExecutor(max_workers=args.workers) as pool:
         tasks={pool.submit(collect,s,s.get('timeout',args.timeout),s.get('attempts',2),args.diagnostics_dir):s for s in selected}
@@ -226,6 +270,9 @@ def main():
             except Exception as exc:
                 found,state=[],{'id':tasks[task]['id'],'status':'parser_error','error_type':type(exc).__name__}
             quotes.extend(found);health.append(state)
+            journal.emit('source_fetch_finished', 'info' if found else 'error', source=state['id'],
+                         status=state['status'], error_type=state.get('error_type'),
+                         http_status=state.get('http_status'), quote_count=len(found))
             detail=' '.join(str(state[k]) for k in ('error_type','error_reason') if state.get(k))
             print(state['id'],state['status'],len(found),detail,flush=True)
     # Unrequested sources have explicit skipped statuses, never fabricated successes.
@@ -242,6 +289,13 @@ def main():
     state = enrich(output, previous, config, datetime.now(timezone.utc))
     atomic_json(Path(args.state), state)
     atomic_json(Path(args.output),output)
+    record_collection(journal, output, config, health, previous)
     print('Saved',args.output,'successful routes:',output['successful_sources'],'/',output['source_count'])
 
-if __name__=='__main__':main()
+if __name__=='__main__':
+    try:
+        main()
+    except Exception as exc:
+        if ACTIVE_JOURNAL is not None:
+            ACTIVE_JOURNAL.emit('collection_failed','error',error_type=type(exc).__name__)
+        raise

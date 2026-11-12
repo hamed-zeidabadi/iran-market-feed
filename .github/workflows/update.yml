@@ -27,16 +27,37 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: node --test tests/proxy.test.mjs
+      - run: node --test tests/proxy.test.mjs tests/audit-worker.test.mjs
       - uses: actions/cache/restore@v4
         with:
           path: .validation/monitoring.json
           key: monitoring-${{ github.ref_name }}-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: monitoring-${{ github.ref_name }}-
+      - name: Restore durable monitoring baseline
+        continue-on-error: true
+        run: python -m scripts.audit_archive restore --state .validation/monitoring.json
+        env:
+          AUDIT_URL: ${{ secrets.AUDIT_URL }}
+          AUDIT_SECRET: ${{ secrets.AUDIT_SECRET }}
       - run: python -m marketfeed
         env:
           MARKET_PROXY_URL: ${{ secrets.MARKET_PROXY_URL }}
           MARKET_PROXY_SECRET: ${{ secrets.MARKET_PROXY_SECRET }}
+      - name: Archive collection incidents
+        if: always()
+        continue-on-error: true
+        run: python -m scripts.audit_archive upload --file .validation/incidents.jsonl --state .validation/monitoring.json
+        env:
+          AUDIT_URL: ${{ secrets.AUDIT_URL }}
+          AUDIT_SECRET: ${{ secrets.AUDIT_SECRET }}
+      - name: Retain collection journal for archive recovery
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: collection-incidents
+          path: .validation/incidents.jsonl
+          include-hidden-files: true
+          retention-days: 90
       - uses: actions/cache/save@v4
         with:
           path: .validation/monitoring.json
@@ -68,4 +89,48 @@ jobs:
         uses: actions/deploy-pages@v4
       - name: Measure public snapshot delay
         continue-on-error: true
-        run: python scripts/check_publication.py --url "${{ steps.deployment.outputs.page_url }}api/prices.json"
+        run: python -m scripts.check_publication --url "${{ steps.deployment.outputs.page_url }}api/prices.json"
+      - name: Archive publication incidents
+        if: always()
+        continue-on-error: true
+        run: python -m scripts.audit_archive upload --file .validation/publication.jsonl
+        env:
+          AUDIT_URL: ${{ secrets.AUDIT_URL }}
+          AUDIT_SECRET: ${{ secrets.AUDIT_SECRET }}
+      - name: Retain publication journal for archive recovery
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: publication-incidents
+          path: .validation/publication.jsonl
+          include-hidden-files: true
+          retention-days: 90
+  audit_status:
+    needs: [collect, deploy]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Record workflow outcome independently of collector success
+        run: python -m scripts.audit_archive workflow --file .validation/workflow.jsonl
+        env:
+          AUDIT_URL: ${{ secrets.AUDIT_URL }}
+          AUDIT_SECRET: ${{ secrets.AUDIT_SECRET }}
+          COLLECT_RESULT: ${{ needs.collect.result }}
+          DEPLOY_RESULT: ${{ needs.deploy.result }}
+          AUDIT_GITHUB_TOKEN: ${{ github.token }}
+      - name: Retain workflow journal for archive recovery
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: workflow-incidents
+          path: .validation/workflow.jsonl
+          include-hidden-files: true
+          retention-days: 90

@@ -79,6 +79,7 @@ def enrich(report, previous, config, now):
                     'samples': count, 'successes': success, 'fresh_samples': fresh,
                     'price': item['price'] if item['is_success'] else old.get('price'),
                     'last_published_at': timestamp if timestamp and (not last_timestamp or iso(timestamp) >= iso(last_timestamp)) else last_timestamp,
+                    'last_snapshot_at': item['snapshot_at'] if item['is_success'] else old.get('last_snapshot_at'),
                     'publication_intervals_seconds': intervals,
                     'unchanged_since': since if item['is_success'] else old.get('unchanged_since'),
                 }

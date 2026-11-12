@@ -1,0 +1,26 @@
+name = "iran-market-feed-audit"
+main = "worker.mjs"
+compatibility_date = "2026-11-12"
+workers_dev = true
+preview_urls = false
+
+[[d1_databases]]
+binding = "DB"
+database_name = "iran-market-feed-audit"
+database_id = "6d915657-8f3a-4531-a090-cc3e25c67752"
+
+[[d1_databases]]
+binding = "DB1"
+database_name = "iran-market-feed-audit-1"
+database_id = "58126458-9568-4e35-89f6-8391e7fb9f3c"
+
+[[d1_databases]]
+binding = "DB2"
+database_name = "iran-market-feed-audit-2"
+database_id = "17cdf9a8-9721-4fe9-88a7-3a8b22df8a64"
+
+[triggers]
+crons = ["*/10 * * * *"]
+
+[observability]
+enabled = true

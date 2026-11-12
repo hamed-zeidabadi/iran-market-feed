@@ -1,0 +1,43 @@
+name: Export incident history
+on:
+  workflow_dispatch:
+    inputs:
+      from_date:
+        description: Start date UTC (YYYY-MM-DD)
+        required: true
+      to_date:
+        description: End date UTC inclusive (YYYY-MM-DD)
+        required: true
+      source_id:
+        description: Optional source ID (empty means all)
+        required: false
+      issues_only:
+        description: Export warnings and errors only
+        type: boolean
+        default: true
+permissions:
+  contents: read
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Export retained records and issue counts
+        run: python -m scripts.export_incidents --from "$FROM_DATE" --to "$TO_DATE"
+        env:
+          FROM_DATE: ${{ inputs.from_date }}
+          TO_DATE: ${{ inputs.to_date }}
+          SOURCE_ID: ${{ inputs.source_id }}
+          ISSUES_ONLY: ${{ inputs.issues_only }}
+          AUDIT_URL: ${{ secrets.AUDIT_URL }}
+          AUDIT_SECRET: ${{ secrets.AUDIT_SECRET }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: incident-history
+          path: .validation/export/
+          include-hidden-files: true
+          retention-days: 90
