@@ -22,13 +22,19 @@ def structural_reason(q):
     return None
 
 
-def time_reason(q, now, policy):
+def time_reason(q, now, policy, allow_snapshot=False):
     if q.time_basis == 'provider_snapshot':
-        return 'snapshot_time_only'
-    if q.time_basis != 'source' or not q.published_at:
+        if not allow_snapshot:
+            return 'snapshot_time_only'
+        stamp = q.snapshot_at
+    elif q.time_basis == 'source':
+        stamp = q.published_at
+    else:
+        stamp = None
+    if not stamp:
         return 'unknown_time'
     try:
-        age = (now - iso(q.published_at)).total_seconds()
+        age = (now - iso(stamp)).total_seconds()
     except (ValueError, TypeError, OverflowError, AttributeError):
         return 'invalid_timestamp'
     if age < -policy['future_tolerance_seconds']:
@@ -57,6 +63,7 @@ def build_report(config, quotes, health, now):
     clock = output_clock(now)
     assets = config['primary_assets'] + config.get('parsian_assets', []) + config.get('global_assets', [])
     sources_config = {s['id']: s for s in config['sources'] if s.get('enabled', True)}
+    health_by_id = {h['id']: h for h in health}
     found = {}
     for q in quotes:
         if q.source not in sources_config or q.asset not in assets:
@@ -66,14 +73,18 @@ def build_report(config, quotes, health, now):
                           iso(x.fetched_at) if canonical_time(x.fetched_at) else datetime.min.replace(tzinfo=timezone.utc), str(x.price))
         if key not in found or rank(q) > rank(found[key]):
             found[key] = q
-    reasons = {key: structural_reason(q) or time_reason(q, now, freshness_policy(config, q)) for key, q in found.items()}
+    reasons = {key: structural_reason(q) or time_reason(q, now, freshness_policy(config, q),
+               sources_config[q.source].get('allow_snapshot_reference', False)) for key, q in found.items()}
     prices, selected_by_asset, centers = {}, {}, {}
     for asset in assets:
         by_group = {}
         eligible = [q for key, q in found.items() if q.asset == asset and reasons[key] is None
                     and sources_config[q.source].get('reference_eligible', True)
+                    and q.asset in sources_config[q.source].get('reference_assets', assets)
+                    and (not sources_config[q.source].get('fallback_for') or
+                         health_by_id.get(sources_config[q.source]['fallback_for'], {}).get('status') in ('error', 'parser_error'))
                     and q.market == 'IR-national' and q.kind == ASSETS[asset].get('quote_type', 'indicative')]
-        for q in sorted(eligible, key=lambda q: (iso(q.published_at), q.source)):
+        for q in sorted(eligible, key=lambda q: (q.time_basis == 'source', iso(q.published_at or q.snapshot_at), q.source)):
             by_group[sources_config[q.source]['group']] = q
         selected = list(by_group.values())
         selected_by_asset[asset] = {q.source for q in selected}
@@ -84,14 +95,15 @@ def build_report(config, quotes, health, now):
         if spread is not None and spread > Decimal(str(config['policy']['max_spread_ratio'])):
             status = 'disputed'
         spec = ASSETS[asset]
+        complete_times = bool(selected) and all(q.time_basis == 'source' and q.published_at for q in selected)
         prices[asset] = {
             'label': spec['label'], 'price': numeric(center), 'currency': spec['currency'], 'unit': spec['unit'],
             'purity': spec.get('purity'), 'quote_type': spec.get('quote_type', 'indicative'), 'status': status, 'direction': None, 'source_count': len(selected),
-            'published_at': canonical_time(max((q.published_at for q in selected), key=iso)) if selected else None,
-            'oldest_contributor_at': canonical_time(min((q.published_at for q in selected), key=iso)) if selected else None,
-            'max_contributor_age_seconds': max(0, max((now - iso(q.published_at)).total_seconds() for q in selected)) if selected else None,
+            'published_at': canonical_time(max((q.published_at for q in selected), key=iso)) if complete_times else None,
+            'oldest_contributor_at': canonical_time(min((q.published_at for q in selected), key=iso)) if complete_times else None,
+            'max_contributor_age_seconds': max(0, max((now - iso(q.published_at)).total_seconds() for q in selected)) if complete_times else None,
             'reference_range': {'min': numeric(min(q.price for q in selected)), 'max': numeric(max(q.price for q in selected))} if selected else None,
-            'quality_warnings': (['source_disagreement'] if status == 'disputed' else []) + (['insufficient_groups'] if len(selected) < config['policy']['min_groups'] else []),
+            'quality_warnings': (['source_disagreement'] if status == 'disputed' else []) + (['insufficient_groups'] if len(selected) < config['policy']['min_groups'] else []) + (['snapshot_contributor'] if any(q.time_basis == 'provider_snapshot' for q in selected) else []),
             'observed_at': max((canonical_time(q.fetched_at) for q in selected), default=None),
             'uses_observed_time': False,
             'spread_percent': numeric(spread * 100) if spread is not None else None,
@@ -99,7 +111,6 @@ def build_report(config, quotes, health, now):
         }
         if 'weight_grams' in spec:
             prices[asset]['weight_grams'] = spec['weight_grams']
-    health_by_id = {h['id']: h for h in health}
     sources = {}
     for source_id, source in sources_config.items():
         detail = {}

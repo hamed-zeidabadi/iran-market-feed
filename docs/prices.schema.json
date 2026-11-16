@@ -3277,7 +3277,8 @@
       "items": {
         "enum": [
           "source_disagreement",
-          "insufficient_groups"
+          "insufficient_groups",
+          "snapshot_contributor"
         ]
       },
       "uniqueItems": true

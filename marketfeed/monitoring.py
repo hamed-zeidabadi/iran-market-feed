@@ -36,7 +36,7 @@ def enrich(report, previous, config, now):
             eligible_ids = {s['id'] for s in config['sources'] if s.get('enabled', True) and s.get('reference_eligible', True)}
             if old and not set(old['contributors']) <= eligible_ids:
                 old = None
-            if ref['status'] == 'ok':
+            if ref['status'] == 'ok' and ref['oldest_contributor_at'] and ref['published_at']:
                 old = {k: ref[k] for k in ('price', 'published_at', 'oldest_contributor_at', 'contributors')}
                 old['accepted_at'] = report['datetime']
             if old:

@@ -208,6 +208,51 @@
       ]
     },
     {
+      "id": "tgju_widget",
+      "url": "https://api.tgju.org/v1/widget/tmp?keys=137119,137120,137121,137123,137137,137138,137139,137140",
+      "group": "tgju",
+      "adapter": "tgju_widget",
+      "enabled": true,
+      "reference_eligible": true,
+      "allow_snapshot_reference": true,
+      "assets": ["gold_18k", "coin_bahar", "coin_emami", "coin_half", "coin_quarter", "gold_ounce", "silver_ounce"],
+      "note": "User opted into snapshot-based reference; updated_at assumed Tehran time, quote publication semantics unconfirmed."
+    },
+    {
+      "id": "ordibehesht_gold",
+      "url": "https://ordibehesht.gold/gold-rate/latest",
+      "group": "ordibehesht",
+      "adapter": "ordibehesht_gold",
+      "enabled": true,
+      "reference_eligible": true,
+      "allow_snapshot_reference": true,
+      "assets": ["gold_18k"],
+      "note": "User opted into snapshot-based reference; gold18 assumed toman per gram and verifiedAtUtc is not confirmed quote time."
+    },
+    {
+      "id": "ordibehesht_page",
+      "url": "https://ordibehesht.gold/gold-rate/",
+      "group": "ordibehesht",
+      "adapter": "ordibehesht_page",
+      "enabled": true,
+      "reference_eligible": true,
+      "reference_assets": ["gold_18k"],
+      "fallback_for": "ordibehesht_gold",
+      "allow_snapshot_reference": true,
+      "assets": ["gold_18k", "coin_bahar", "coin_emami", "coin_half", "coin_quarter", "gold_ounce"],
+      "note": "Gold fallback on API failure only; board verification time is shared, not a per-item quote time. Other items comparison only."
+    },
+    {
+      "id": "bazaretala_gold",
+      "url": "https://bazaretala.com/gold-price",
+      "group": "bazaretala",
+      "adapter": "bazaretala_gold",
+      "enabled": true,
+      "reference_eligible": false,
+      "assets": ["gold_18k"],
+      "note": "Comparison only: row has clock without date; rial unit inferred, upstream independence unknown."
+    },
+    {
       "id": "tala_gold",
       "url": "https://www.tala.ir/price/18k",
       "group": "tala",

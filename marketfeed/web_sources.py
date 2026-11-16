@@ -62,6 +62,113 @@ def tgju_snapshot(body, source, fetched):
     return out
 
 
+def tgju_widget(body, source, fetched):
+    rows = json.loads(body)['response']['indicators']
+    if not isinstance(rows, list):
+        raise ValueError('TGJU indicators must be a list')
+    mapping = {137119: ('ons', 'gold_ounce'), 137121: ('geram18', 'gold_18k'),
+               137123: ('silver', 'silver_ounce'), 137137: ('sekeb', 'coin_bahar'),
+               137138: ('sekee', 'coin_emami'), 137139: ('nim', 'coin_half'),
+               137140: ('rob', 'coin_quarter')}
+    out = []
+    for row in rows:
+        if not isinstance(row, dict) or row.get('item_id') not in mapping:
+            continue
+        name, asset = mapping[row['item_id']]
+        if row.get('name') != name:
+            continue
+        try:
+            # Observed as Tehran wall time; treat it as a snapshot, not a trade time.
+            stamp = datetime.strptime(row['updated_at'], '%Y-%m-%d %H:%M:%S').replace(tzinfo=TEHRAN)
+            divisor = 1 if asset in ('gold_ounce', 'silver_ounce') else 10
+            add(out, source, asset, number(row['p']) / divisor, fetched,
+                time_basis='provider_snapshot', snapshot_at=stamp.isoformat())
+        except (KeyError, ValueError, TypeError):
+            continue
+    return out
+
+
+def ordibehesht_gold(body, source, fetched):
+    data = json.loads(body, parse_float=Decimal)
+    if not isinstance(data, dict) or type(data.get('fresh')) is not bool:
+        raise ValueError('invalid gold rate response')
+    if not data['fresh']:
+        return []
+    try:
+        stamp = iso(data['verifiedAtUtc']).isoformat()
+        out = []
+        add(out, source, 'gold_18k', data['gold18'], fetched,
+            time_basis='provider_snapshot', snapshot_at=stamp)
+        return out
+    except (KeyError, ValueError, TypeError, AttributeError):
+        return []
+
+
+def ordibehesht_page(body, source, fetched):
+    soup = BeautifulSoup(body, 'html.parser')
+    verified = soup.select_one('#last-verified bdi')
+    stamp = None
+    if verified:
+        months = ('فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور',
+                  'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند')
+        text = verified.get_text(' ', strip=True).translate(DIGITS)
+        match = re.search(r'(\d{1,2})\s+(' + '|'.join(months) +
+                          r')\s+(14\d{2})\s+ساعت\s+(\d{1,2}):(\d{2})\s+(صبح|عصر|شب|بامداد|ظهر)', text)
+        if match:
+            try:
+                day, month, year, hour, minute, period = match.groups()
+                hour, minute = int(hour), int(minute)
+                if not 1 <= hour <= 12 or minute > 59:
+                    raise ValueError('invalid clock')
+                hour = hour % 12 + (12 if period in ('عصر', 'شب', 'ظهر') else 0)
+                y, m, d = jalali_to_date(int(year), months.index(month) + 1, int(day))
+                stamp = datetime(y, m, d, hour, minute, tzinfo=TEHRAN).isoformat()
+            except ValueError:
+                pass
+    mapping = {'هر گرم طلای 18 عیار': ('gold_18k', 'تومان'),
+               'سکه تمام (امامی)': ('coin_emami', 'تومان'),
+               'سکه تمام (قدیم)': ('coin_bahar', 'تومان'),
+               'نیم سکه': ('coin_half', 'تومان'), 'ربع سکه': ('coin_quarter', 'تومان'),
+               'انس طلا': ('gold_ounce', 'دلار')}
+    out, seen = [], set()
+    for row in soup.select('#gold-price-body .price-pill'):
+        label, value = row.select_one('.product-name'), row.select_one('.price-value')
+        if not label or not value:
+            continue
+        key = label.get_text(' ', strip=True).translate(DIGITS).replace('\u200c', ' ')
+        if key not in mapping:
+            continue
+        asset, unit = mapping[key]
+        if asset in seen:
+            return []
+        seen.add(asset)
+        match = re.fullmatch(r'\s*([\d۰-۹٠-٩٬,.]+)\s*' + unit + r'\s*', value.get_text(' ', strip=True))
+        if match:
+            if asset == 'gold_18k' and stamp:
+                add(out, source, asset, match[1], fetched, time_basis='provider_snapshot', snapshot_at=stamp)
+            else:
+                add(out, source, asset, match[1], fetched)
+    return out
+
+
+def bazaretala_gold(body, source, fetched):
+    soup = BeautifulSoup(body, 'html.parser')
+    rows = soup.select('tr.tr-price[data-slug="geram18"]')
+    if len(rows) != 1:
+        return []
+    row = rows[0]
+    label, value = row.select_one('th.ptitle'), row.select_one('td.p')
+    if not label or not value or label.get_text(' ', strip=True).translate(DIGITS) != 'طلای 18 عیار':
+        return []
+    out = []
+    try:
+        # Rial is inferred from the displayed magnitude; this route is comparison only.
+        add(out, source, 'gold_18k', number(value.get_text(strip=True)) / 10, fetched)
+    except ValueError:
+        pass
+    return out
+
+
 def tala_time(soup):
     """Tala's #priceLastTime is the page render clock, not the rate's time.
 
@@ -520,7 +627,10 @@ def baha24(body, source, fetched):
     return list(latest.values())
 
 
-WEB_ADAPTERS = {'tgju_snapshot':tgju_snapshot, 'tala_parsian':tala_parsian, 'goldika':goldika, 'motalla':motalla,
+WEB_ADAPTERS = {'tgju_snapshot':tgju_snapshot, 'tgju_widget':tgju_widget,
+                'ordibehesht_gold':ordibehesht_gold, 'ordibehesht_page':ordibehesht_page,
+                'bazaretala_gold':bazaretala_gold,
+                'tala_parsian':tala_parsian, 'goldika':goldika, 'motalla':motalla,
                 'hitobit_trades':hitobit_trades,
                 'swissquote':swissquote, 'baha24':baha24, 'ramzinex_orderbook':ramzinex_orderbook,
                 'exir_orderbook':exir_orderbook, 'wallex_trades':wallex_trades, 'bitpin_matches':bitpin_matches,
