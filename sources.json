@@ -570,6 +570,72 @@
       "note": "Comparison only: hourly channel posts; message time is the quote time; upstream and rate type not stated. Gram-gold line ignored (constant all day)."
     },
     {
+      "id": "arvan_ramzinex",
+      "url": "https://hello-world.zeidabadi73-foifd.arvanedge.ir/api/prices?source=ramzinex",
+      "group": "ramzinex", "adapter": "arvan_fallback", "arvan_source": "ramzinex",
+      "enabled": true, "reference_eligible": true, "fallback_route": true,
+      "asset_policies": {"usdt": {"max_age_seconds": 300}}, "assets": ["usdt"],
+      "note": "Arvan fallback; newest order-book level time, same publisher group as direct Ramzinex."
+    },
+    {
+      "id": "arvan_tgju",
+      "url": "https://hello-world.zeidabadi73-foifd.arvanedge.ir/api/prices?source=tgju",
+      "group": "tgju", "adapter": "arvan_fallback", "arvan_source": "tgju",
+      "enabled": true, "reference_eligible": true, "fallback_route": true,
+      "assets": ["gold_18k", "silver_999", "coin_bahar", "coin_emami", "coin_half", "coin_quarter", "gold_ounce"],
+      "note": "Arvan fallback for TGJU; shares TGJU publisher group."
+    },
+    {
+      "id": "arvan_tgju_widget",
+      "url": "https://hello-world.zeidabadi73-foifd.arvanedge.ir/api/prices?source=tgju_widget",
+      "group": "tgju", "adapter": "arvan_fallback", "arvan_source": "tgju_widget",
+      "enabled": true, "reference_eligible": true, "fallback_route": true, "allow_snapshot_reference": true,
+      "assets": ["gold_18k", "coin_bahar", "coin_emami", "coin_half", "coin_quarter", "gold_ounce", "silver_ounce"],
+      "note": "Arvan fallback for TGJU widget; snapshot time, same publisher group."
+    },
+    {
+      "id": "arvan_ordibehesht",
+      "url": "https://hello-world.zeidabadi73-foifd.arvanedge.ir/api/prices?source=ordibehesht",
+      "group": "ordibehesht", "adapter": "arvan_fallback", "arvan_source": "ordibehesht",
+      "enabled": true, "reference_eligible": true, "fallback_route": true, "allow_snapshot_reference": true,
+      "assets": ["gold_18k"], "note": "Arvan fallback for Ordibehesht; verification time is snapshot only."
+    },
+    {
+      "id": "arvan_digikala",
+      "url": "https://hello-world.zeidabadi73-foifd.arvanedge.ir/api/prices?source=digikala",
+      "group": "digikala", "adapter": "arvan_fallback", "arvan_source": "digikala",
+      "enabled": true, "reference_eligible": true, "fallback_route": true, "allow_observed_reference": true,
+      "assets": ["gold_18k", "silver_999"], "note": "Arvan fallback; Digikala quote time and units remain unconfirmed."
+    },
+    {
+      "id": "arvan_parasteh",
+      "url": "https://hello-world.zeidabadi73-foifd.arvanedge.ir/api/prices?source=parasteh",
+      "group": "parasteh", "adapter": "arvan_fallback", "arvan_source": "parasteh",
+      "enabled": true, "reference_eligible": false, "fallback_route": true,
+      "assets": ["gold_18k"], "note": "Comparison only: same Parasteh rate, timestamp semantics unconfirmed."
+    },
+    {
+      "id": "arvan_arzdigital_nobitex",
+      "url": "https://hello-world.zeidabadi73-foifd.arvanedge.ir/api/prices?source=arzdigital",
+      "group": "nobitex", "adapter": "arvan_fallback", "arvan_source": "arzdigital", "arvan_exchange": "nobitex",
+      "enabled": true, "reference_eligible": true, "fallback_route": true, "allow_snapshot_reference": true,
+      "asset_policies": {"usdt": {"max_age_seconds": 300}}, "assets": ["usdt"]
+    },
+    {
+      "id": "arvan_arzdigital_ramzinex",
+      "url": "https://hello-world.zeidabadi73-foifd.arvanedge.ir/api/prices?source=arzdigital",
+      "group": "ramzinex", "adapter": "arvan_fallback", "arvan_source": "arzdigital", "arvan_exchange": "ramzinex",
+      "enabled": true, "reference_eligible": true, "fallback_route": true, "allow_snapshot_reference": true,
+      "asset_policies": {"usdt": {"max_age_seconds": 300}}, "assets": ["usdt"]
+    },
+    {
+      "id": "arvan_arzdigital_wallex",
+      "url": "https://hello-world.zeidabadi73-foifd.arvanedge.ir/api/prices?source=arzdigital",
+      "group": "wallex", "adapter": "arvan_fallback", "arvan_source": "arzdigital", "arvan_exchange": "wallex",
+      "enabled": true, "reference_eligible": true, "fallback_route": true, "allow_snapshot_reference": true,
+      "asset_policies": {"usdt": {"max_age_seconds": 300}}, "assets": ["usdt"]
+    },
+    {
       "id": "arzdigital_nobitex",
       "url": "https://lake.arzdigital.com/web/api/v1/pub/exchanges/pairs/top-pairs?limit=50&offset=0&base=tether&deprecated=false&exchange_country=IR",
       "group": "nobitex",

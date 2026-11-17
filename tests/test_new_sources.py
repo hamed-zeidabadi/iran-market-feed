@@ -209,7 +209,7 @@ class ReferenceTests(unittest.TestCase):
         self.assertEqual(new['tabdeal_usdt']['kind'],'midpoint')
         self.assertFalse(new['telegram_dollargold24']['reference_eligible'])
         self.assertEqual({s['id'] for s in cfg['sources'] if s['group']=='nobitex'},
-                         {'nobitex_usdt', 'arzdigital_nobitex'})
+                         {'nobitex_usdt', 'arzdigital_nobitex', 'arvan_arzdigital_nobitex'})
         self.assertFalse(any('4334467640' in s['url'] for s in cfg['sources']))
 
 

@@ -219,8 +219,11 @@ def load_config(path):
         if not re.fullmatch(r'[a-z0-9_]+', s['id']):raise ValueError('invalid source ID')
         if s['id'] in ids:raise ValueError('duplicate source ID')
         previous = urls.get(s['url'])
-        if previous and not (s['adapter'] == 'arzdigital_usdt' and previous == 'arzdigital_usdt'
-                             and s['url'] == 'https://lake.arzdigital.com/web/api/v1/pub/exchanges/pairs/top-pairs?limit=50&offset=0&base=tether&deprecated=false&exchange_country=IR'):
+        shared_market = (s['adapter'] == previous == 'arzdigital_usdt' and
+                         s['url'] == 'https://lake.arzdigital.com/web/api/v1/pub/exchanges/pairs/top-pairs?limit=50&offset=0&base=tether&deprecated=false&exchange_country=IR')
+        shared_arvan = (s['adapter'] == previous == 'arvan_fallback' and
+                        s['url'] == 'https://hello-world.zeidabadi73-foifd.arvanedge.ir/api/prices?source=arzdigital')
+        if previous and not (shared_market or shared_arvan):
             raise ValueError('duplicate source URL')
         ids.add(s['id'])
         urls[s['url']] = s['adapter']

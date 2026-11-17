@@ -87,7 +87,8 @@ def build_report(config, quotes, health, now):
                     and (not sources_config[q.source].get('fallback_for') or
                          health_by_id.get(sources_config[q.source]['fallback_for'], {}).get('status') in ('error', 'parser_error'))
                     and q.market == 'IR-national' and q.kind == ASSETS[asset].get('quote_type', 'indicative')]
-        for q in sorted(eligible, key=lambda q: (q.time_basis == 'source', iso(q.published_at or q.snapshot_at or q.fetched_at), q.source)):
+        for q in sorted(eligible, key=lambda q: (not sources_config[q.source].get('fallback_route', False),
+                                                  q.time_basis == 'source', iso(q.published_at or q.snapshot_at or q.fetched_at), q.source)):
             by_group[sources_config[q.source]['group']] = q
         selected = list(by_group.values())
         selected_by_asset[asset] = {q.source for q in selected}

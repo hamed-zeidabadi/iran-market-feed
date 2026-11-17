@@ -31,6 +31,57 @@ def add(out, source, asset, value, fetched, timestamp=None, **kwargs):
         pass
 
 
+def arvan_fallback(body, source, fetched):
+    """Read only the configured origin/asset from the Arvan observation API."""
+    payload = json.loads(body, parse_float=Decimal)
+    target = source['arvan_source']
+    data = payload.get('sources', {}).get(target) if isinstance(payload, dict) else None
+    if not isinstance(data, dict) or data.get('status') != 'parsed' or not isinstance(data.get('quotes'), list):
+        return []
+    expected_exchange = source.get('arvan_exchange')
+    valid = []
+    for item in data['quotes']:
+        if not isinstance(item, dict) or item.get('source') != target or item.get('asset') not in source['assets']:
+            continue
+        asset = item['asset']
+        expected_currency = 'USD' if asset in ('gold_ounce', 'silver_ounce') else 'IRT'
+        expected_unit = 'troy_ounce' if expected_currency == 'USD' else 'USDT' if asset == 'usdt' else 'coin' if asset.startswith('coin_') else 'gram'
+        if item.get('currency') != expected_currency or item.get('unit') != expected_unit:
+            continue
+        if expected_exchange and item.get('exchange') != expected_exchange:
+            continue
+        if asset == 'usdt' and item.get('quote_type') != 'midpoint':
+            continue
+        if isinstance(item.get('price'), bool):
+            continue
+        try:
+            price = number(item['price'])
+            observed = iso(item['observed_at'])
+            delta = (iso(fetched) - observed).total_seconds()
+            if not -120 <= delta <= 300:
+                continue
+            basis = item.get('time_basis')
+            when = iso(item['source_time']).isoformat() if item.get('source_time') else None
+            if basis in ('source', 'book_level_change') and when:
+                kwargs = {'timestamp': when}
+            elif basis == 'provider_snapshot' and when:
+                kwargs = {'time_basis': 'provider_snapshot', 'snapshot_at': when}
+            elif basis == 'observed_only' and target == 'digikala':
+                kwargs = {'time_basis': 'observed_only'}
+            else:
+                continue
+            valid.append((asset, price, kwargs))
+        except (KeyError, ValueError, TypeError, AttributeError, OverflowError):
+            continue
+    # A duplicated asset must never be selected arbitrarily.
+    counts = {asset: sum(q[0] == asset for q in valid) for asset, _, _ in valid}
+    out = []
+    for asset, price, kwargs in valid:
+        if counts[asset] == 1:
+            add(out, source, asset, price, fetched, kind='midpoint' if asset == 'usdt' else 'indicative', **kwargs)
+    return out
+
+
 def arzdigital_usdt(body, source, fetched):
     data = json.loads(body, parse_float=Decimal)
     if not isinstance(data, dict) or data.get('status') != 'success' or not isinstance(data.get('data'), list):
@@ -726,7 +777,7 @@ def baha24(body, source, fetched):
     return list(latest.values())
 
 
-WEB_ADAPTERS = {'arzdigital_usdt':arzdigital_usdt, 'tgju_snapshot':tgju_snapshot, 'tgju_widget':tgju_widget,
+WEB_ADAPTERS = {'arvan_fallback':arvan_fallback, 'arzdigital_usdt':arzdigital_usdt, 'tgju_snapshot':tgju_snapshot, 'tgju_widget':tgju_widget,
                 'ordibehesht_gold':ordibehesht_gold, 'ordibehesht_page':ordibehesht_page, 'baazar_gold':baazar_gold,
                 'digikala_prices':digikala_prices, 'parasteh_gold':parasteh_gold,
                 'bazaretala_gold':bazaretala_gold,

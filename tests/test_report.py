@@ -59,9 +59,13 @@ class ReportTests(unittest.TestCase):
   shared=[s for s in cfg['sources'] if s['adapter']=='arzdigital_usdt']
   self.assertEqual(len(shared),3)
   self.assertEqual(len({s['url'] for s in shared}),1)
-  other=[s for s in cfg['sources'] if s['adapter']!='arzdigital_usdt']
+  arvan=[s for s in cfg['sources'] if s['adapter']=='arvan_fallback' and s.get('arvan_source')=='arzdigital']
+  self.assertEqual(len(arvan),3)
+  self.assertEqual(len({s['url'] for s in arvan}),1)
+  other=[s for s in cfg['sources'] if s not in shared and s not in arvan]
   self.assertEqual(len({s['url'] for s in other}),len(other))
   self.assertNotIn(shared[0]['url'],{s['url'] for s in other})
+  self.assertNotIn(arvan[0]['url'],{s['url'] for s in other})
  def test_json_serializable(self):
   json.dumps(build_report(config(),[quote('a')],[],NOW),allow_nan=False)
 if __name__=='__main__':unittest.main()
