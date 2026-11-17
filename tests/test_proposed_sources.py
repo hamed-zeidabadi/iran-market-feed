@@ -95,6 +95,26 @@ class ProposedSourcesTests(unittest.TestCase):
             bad = {'error': None, 'data': {**data['data'], **change}}
             self.assertEqual(self.parse('baazar_gold', json.dumps(bad)), [])
 
+    def test_digikala_observed_time_is_explicit(self):
+        payload = json.dumps({'gold18': {'price': 247015, 'ttl': 60},
+                              'silver999': {'price': 4278, 'ttl': 60}})
+        quotes = self.parse('digikala_wealth', payload)
+        self.assertEqual({q.asset: q.price for q in quotes},
+                         {'gold_18k': Decimal('24701500'), 'silver_999': Decimal('427800')})
+        self.assertTrue(all(q.published_at is None and q.time_basis == 'observed_only' for q in quotes))
+        result = build_report(self.config, quotes, [], self.now)
+        for asset in ('gold_18k', 'silver_999'):
+            item = result['sources']['digikala_wealth']['prices'][asset]
+            self.assertTrue(item['used_in_reference'])
+            self.assertFalse(item['is_fresh'])
+            self.assertTrue(result['prices'][asset]['uses_observed_time'])
+            self.assertIsNone(result['prices'][asset]['published_at'])
+            self.assertIn('observed_time_contributor', result['prices'][asset]['quality_warnings'])
+        stale = build_report(self.config, quotes, [], datetime(2026, 11, 17, tzinfo=timezone.utc))
+        self.assertFalse(stale['sources']['digikala_wealth']['prices']['gold_18k']['used_in_reference'])
+        bad = self.parse('digikala_wealth', json.dumps({'gold18': {'price': True}, 'silver999': {'price': -1}}))
+        self.assertEqual(bad, [])
+
 
 if __name__ == '__main__':
     unittest.main()

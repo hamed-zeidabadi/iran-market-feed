@@ -22,13 +22,15 @@ def structural_reason(q):
     return None
 
 
-def time_reason(q, now, policy, allow_snapshot=False):
+def time_reason(q, now, policy, allow_snapshot=False, allow_observed=False):
     if q.time_basis == 'provider_snapshot':
         if not allow_snapshot:
             return 'snapshot_time_only'
         stamp = q.snapshot_at
     elif q.time_basis == 'source':
         stamp = q.published_at
+    elif q.time_basis == 'observed_only' and allow_observed:
+        stamp = q.fetched_at
     else:
         stamp = None
     if not stamp:
@@ -74,7 +76,8 @@ def build_report(config, quotes, health, now):
         if key not in found or rank(q) > rank(found[key]):
             found[key] = q
     reasons = {key: structural_reason(q) or time_reason(q, now, freshness_policy(config, q),
-               sources_config[q.source].get('allow_snapshot_reference', False)) for key, q in found.items()}
+               sources_config[q.source].get('allow_snapshot_reference', False),
+               sources_config[q.source].get('allow_observed_reference', False)) for key, q in found.items()}
     prices, selected_by_asset, centers = {}, {}, {}
     for asset in assets:
         by_group = {}
@@ -84,7 +87,7 @@ def build_report(config, quotes, health, now):
                     and (not sources_config[q.source].get('fallback_for') or
                          health_by_id.get(sources_config[q.source]['fallback_for'], {}).get('status') in ('error', 'parser_error'))
                     and q.market == 'IR-national' and q.kind == ASSETS[asset].get('quote_type', 'indicative')]
-        for q in sorted(eligible, key=lambda q: (q.time_basis == 'source', iso(q.published_at or q.snapshot_at), q.source)):
+        for q in sorted(eligible, key=lambda q: (q.time_basis == 'source', iso(q.published_at or q.snapshot_at or q.fetched_at), q.source)):
             by_group[sources_config[q.source]['group']] = q
         selected = list(by_group.values())
         selected_by_asset[asset] = {q.source for q in selected}
@@ -103,9 +106,9 @@ def build_report(config, quotes, health, now):
             'oldest_contributor_at': canonical_time(min((q.published_at for q in selected), key=iso)) if complete_times else None,
             'max_contributor_age_seconds': max(0, max((now - iso(q.published_at)).total_seconds() for q in selected)) if complete_times else None,
             'reference_range': {'min': numeric(min(q.price for q in selected)), 'max': numeric(max(q.price for q in selected))} if selected else None,
-            'quality_warnings': (['source_disagreement'] if status == 'disputed' else []) + (['insufficient_groups'] if len(selected) < config['policy']['min_groups'] else []) + (['snapshot_contributor'] if any(q.time_basis == 'provider_snapshot' for q in selected) else []),
+            'quality_warnings': (['source_disagreement'] if status == 'disputed' else []) + (['insufficient_groups'] if len(selected) < config['policy']['min_groups'] else []) + (['snapshot_contributor'] if any(q.time_basis == 'provider_snapshot' for q in selected) else []) + (['observed_time_contributor'] if any(q.time_basis == 'observed_only' for q in selected) else []),
             'observed_at': max((canonical_time(q.fetched_at) for q in selected), default=None),
-            'uses_observed_time': False,
+            'uses_observed_time': any(q.time_basis == 'observed_only' for q in selected),
             'spread_percent': numeric(spread * 100) if spread is not None else None,
             'tolerance': numeric(tolerance_for(config, asset, center)), 'contributors': sorted(selected_by_asset[asset]),
         }
@@ -131,7 +134,7 @@ def build_report(config, quotes, health, now):
                 'difference': numeric(diff),
                 'difference_rial': numeric(diff * 10) if diff is not None and ASSETS[asset]['currency'] == 'IRT' else None,
                 'is_close': abs(diff) <= tolerance_for(config, asset, centers[asset]) if diff is not None else None,
-                'is_fresh': reason is None, 'is_usable': valid and reason is None and compatible,
+                'is_fresh': reason is None and q.time_basis != 'observed_only', 'is_usable': valid and reason is None and compatible,
                 'used_in_reference': source_id in selected_by_asset[asset],
                 'reason': reason if reason else None if compatible else 'different_market_or_quote_type',
                 'published_at': published, 'observed_at': canonical_time(q.fetched_at) if q else None,
@@ -139,7 +142,7 @@ def build_report(config, quotes, health, now):
                 'snapshot_age_seconds': max(0, snapshot_age) if snapshot_age is not None else None,
                 'snapshot_is_recent': bool(valid and snapshot_age is not None and
                     -policy['future_tolerance_seconds'] <= snapshot_age <= policy['max_age_seconds']),
-                'time_basis': 'source' if published else 'provider_snapshot' if q and q.time_basis == 'provider_snapshot' else 'unknown' if q else None,
+                'time_basis': 'source' if published else 'provider_snapshot' if q and q.time_basis == 'provider_snapshot' else 'observed_only' if q and q.time_basis == 'observed_only' else 'unknown' if q else None,
             }
             if 'weight_grams' in ASSETS[asset]:
                 detail[asset]['weight_grams'] = ASSETS[asset]['weight_grams']

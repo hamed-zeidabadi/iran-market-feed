@@ -243,6 +243,17 @@
       "note": "Gold fallback on API failure only; board verification time is shared, not a per-item quote time. Other items comparison only."
     },
     {
+      "id": "digikala_wealth",
+      "url": "https://api.digikala.com/wealth/v1/prices/",
+      "group": "digikala",
+      "adapter": "digikala_prices",
+      "enabled": true,
+      "reference_eligible": true,
+      "allow_observed_reference": true,
+      "assets": ["gold_18k", "silver_999"],
+      "note": "User opted into observed-time reference. Price unit inferred as rial/mg; quote type and publication time unconfirmed."
+    },
+    {
       "id": "baazar_gold",
       "url": "https://api.baazar.ir/landing/v1/price/DAILY/30",
       "group": "baazar",

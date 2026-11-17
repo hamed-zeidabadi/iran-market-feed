@@ -123,6 +123,23 @@ def baazar_gold(body, source, fetched):
         return []
 
 
+def digikala_prices(body, source, fetched):
+    data = json.loads(body, parse_float=Decimal)
+    if not isinstance(data, dict):
+        raise ValueError('invalid Digikala price response')
+    out = []
+    for key, asset in (('gold18', 'gold_18k'), ('silver999', 'silver_999')):
+        row = data.get(key)
+        if not isinstance(row, dict) or isinstance(row.get('price'), bool):
+            continue
+        try:
+            # Rial per milligram is inferred from magnitude, pending publisher confirmation.
+            add(out, source, asset, number(row['price']) * 100, fetched, time_basis='observed_only')
+        except (KeyError, ValueError, TypeError):
+            continue
+    return out
+
+
 def ordibehesht_page(body, source, fetched):
     soup = BeautifulSoup(body, 'html.parser')
     verified = soup.select_one('#last-verified bdi')
@@ -648,6 +665,7 @@ def baha24(body, source, fetched):
 
 WEB_ADAPTERS = {'tgju_snapshot':tgju_snapshot, 'tgju_widget':tgju_widget,
                 'ordibehesht_gold':ordibehesht_gold, 'ordibehesht_page':ordibehesht_page, 'baazar_gold':baazar_gold,
+                'digikala_prices':digikala_prices,
                 'bazaretala_gold':bazaretala_gold,
                 'tala_parsian':tala_parsian, 'goldika':goldika, 'motalla':motalla,
                 'hitobit_trades':hitobit_trades,
