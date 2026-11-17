@@ -79,6 +79,22 @@ class ProposedSourcesTests(unittest.TestCase):
                              datetime(2026, 11, 17, tzinfo=timezone.utc))
         self.assertFalse(stale['sources']['ordibehesht_page']['prices']['gold_18k']['used_in_reference'])
 
+    def test_baazar_platform_buy_is_only_comparison(self):
+        data = {'error': None, 'data': {'buyPrice': 247013476, 'sellPrice': 244704967,
+                                       'currentTime': 1794833700000, 'prices': []}}
+        quotes = self.parse('baazar_gold', json.dumps(data))
+        self.assertEqual(quotes[0].price, Decimal('24701347.6'))
+        self.assertEqual(quotes[0].kind, 'platform_buy')
+        self.assertIsNone(quotes[0].published_at)
+        result = build_report(self.config, quotes, [], self.now)
+        detail = result['sources']['baazar_gold']['prices']['gold_18k']
+        self.assertEqual(detail['reason'], 'snapshot_time_only')
+        self.assertFalse(detail['used_in_reference'])
+        self.assertIsNone(result['prices']['gold_18k']['price'])
+        for change in ({'buyPrice': 1}, {'sellPrice': 0}, {'currentTime': True}, {'currentTime': 1794833700}):
+            bad = {'error': None, 'data': {**data['data'], **change}}
+            self.assertEqual(self.parse('baazar_gold', json.dumps(bad)), [])
+
 
 if __name__ == '__main__':
     unittest.main()

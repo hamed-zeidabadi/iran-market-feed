@@ -104,6 +104,25 @@ def ordibehesht_gold(body, source, fetched):
         return []
 
 
+def baazar_gold(body, source, fetched):
+    payload = json.loads(body, parse_float=Decimal)
+    if not isinstance(payload, dict) or payload.get('error') is not None or not isinstance(payload.get('data'), dict):
+        raise ValueError('invalid Baazar response')
+    data = payload['data']
+    try:
+        buy, sell = number(data['buyPrice']), number(data['sellPrice'])
+        stamp = data['currentTime']
+        if sell > buy or type(stamp) is not int or not 1_000_000_000_000 <= stamp < 10_000_000_000_000:
+            return []
+        moment = datetime.fromtimestamp(stamp / 1000, UTC)
+        out = []
+        add(out, source, 'gold_18k', buy / 10, fetched, kind='platform_buy',
+            time_basis='provider_snapshot', snapshot_at=moment.isoformat())
+        return out
+    except (KeyError, TypeError, ValueError, OverflowError, OSError):
+        return []
+
+
 def ordibehesht_page(body, source, fetched):
     soup = BeautifulSoup(body, 'html.parser')
     verified = soup.select_one('#last-verified bdi')
@@ -628,7 +647,7 @@ def baha24(body, source, fetched):
 
 
 WEB_ADAPTERS = {'tgju_snapshot':tgju_snapshot, 'tgju_widget':tgju_widget,
-                'ordibehesht_gold':ordibehesht_gold, 'ordibehesht_page':ordibehesht_page,
+                'ordibehesht_gold':ordibehesht_gold, 'ordibehesht_page':ordibehesht_page, 'baazar_gold':baazar_gold,
                 'bazaretala_gold':bazaretala_gold,
                 'tala_parsian':tala_parsian, 'goldika':goldika, 'motalla':motalla,
                 'hitobit_trades':hitobit_trades,

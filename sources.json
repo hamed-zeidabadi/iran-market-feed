@@ -243,6 +243,16 @@
       "note": "Gold fallback on API failure only; board verification time is shared, not a per-item quote time. Other items comparison only."
     },
     {
+      "id": "baazar_gold",
+      "url": "https://api.baazar.ir/landing/v1/price/DAILY/30",
+      "group": "baazar",
+      "adapter": "baazar_gold",
+      "enabled": true,
+      "reference_eligible": false,
+      "assets": ["gold_18k"],
+      "note": "Comparison only: platform buyPrice in rial per gram; currentTime is response time, not quote publication time."
+    },
+    {
       "id": "bazaretala_gold",
       "url": "https://bazaretala.com/gold-price",
       "group": "bazaretala",
