@@ -95,6 +95,24 @@ class ProposedSourcesTests(unittest.TestCase):
             bad = {'error': None, 'data': {**data['data'], **change}}
             self.assertEqual(self.parse('baazar_gold', json.dumps(bad)), [])
 
+    def test_parasteh_uses_undiscounted_rate_and_snapshot_only(self):
+        data = {'symbol': 'XAU', 'gold': 24505000, 'gold_original': 24805000,
+                'updated_at': '2026-11-17T05:57:32+00:00'}
+        quotes = self.parse('parasteh_gold', json.dumps(data))
+        self.assertEqual(quotes[0].price, Decimal('24805000'))
+        self.assertEqual(quotes[0].time_basis, 'provider_snapshot')
+        self.assertIsNone(quotes[0].published_at)
+        self.assertEqual(quotes[0].snapshot_at, '2026-11-17T05:57:32+00:00')
+        result = build_report(self.config, quotes, [], datetime(2026, 11, 17, 6, 0, tzinfo=timezone.utc))
+        item = result['sources']['parasteh_gold']['prices']['gold_18k']
+        self.assertTrue(item['snapshot_is_recent'])
+        self.assertFalse(item['used_in_reference'])
+        self.assertEqual(item['reason'], 'snapshot_time_only')
+        for price in (None, 0, -1, True):
+            self.assertEqual(self.parse('parasteh_gold', json.dumps({**data, 'gold_original': price})), [])
+        no_time = self.parse('parasteh_gold', json.dumps({**data, 'updated_at': 'not-a-date'}))
+        self.assertEqual(no_time[0].time_basis, 'unknown')
+
     def test_digikala_observed_time_is_explicit(self):
         payload = json.dumps({'gold18': {'price': 247015, 'ttl': 60},
                               'silver999': {'price': 4278, 'ttl': 60}})

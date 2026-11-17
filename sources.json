@@ -254,6 +254,16 @@
       "note": "User opted into observed-time reference. Price unit inferred as rial/mg; quote type and publication time unconfirmed."
     },
     {
+      "id": "parasteh_gold",
+      "url": "https://parasteh.com/wp-json/parasteh/v1/gold-rate",
+      "group": "parasteh",
+      "adapter": "parasteh_gold",
+      "enabled": true,
+      "reference_eligible": false,
+      "assets": ["gold_18k"],
+      "note": "Comparison only: undiscounted gold_original in toman; per-gram 18k basis and updated_at semantics require verification."
+    },
+    {
       "id": "baazar_gold",
       "url": "https://api.baazar.ir/landing/v1/price/DAILY/30",
       "group": "baazar",

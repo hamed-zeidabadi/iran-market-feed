@@ -123,6 +123,29 @@ def baazar_gold(body, source, fetched):
         return []
 
 
+def parasteh_gold(body, source, fetched):
+    data = json.loads(body, parse_float=Decimal)
+    if not isinstance(data, dict) or data.get('symbol') != 'XAU':
+        raise ValueError('invalid Parasteh gold rate response')
+    price = data.get('gold_original')
+    if isinstance(price, bool) or price is None:
+        return []
+    try:
+        value = number(price)
+    except (ValueError, TypeError):
+        return []
+    try:
+        stamp = iso(data['updated_at']).isoformat()
+    except (KeyError, ValueError, TypeError, AttributeError, OverflowError):
+        stamp = None
+    out = []
+    if stamp:
+        add(out, source, 'gold_18k', value, fetched, time_basis='provider_snapshot', snapshot_at=stamp)
+    else:
+        add(out, source, 'gold_18k', value, fetched)
+    return out
+
+
 def digikala_prices(body, source, fetched):
     data = json.loads(body, parse_float=Decimal)
     if not isinstance(data, dict):
@@ -665,7 +688,7 @@ def baha24(body, source, fetched):
 
 WEB_ADAPTERS = {'tgju_snapshot':tgju_snapshot, 'tgju_widget':tgju_widget,
                 'ordibehesht_gold':ordibehesht_gold, 'ordibehesht_page':ordibehesht_page, 'baazar_gold':baazar_gold,
-                'digikala_prices':digikala_prices,
+                'digikala_prices':digikala_prices, 'parasteh_gold':parasteh_gold,
                 'bazaretala_gold':bazaretala_gold,
                 'tala_parsian':tala_parsian, 'goldika':goldika, 'motalla':motalla,
                 'hitobit_trades':hitobit_trades,
