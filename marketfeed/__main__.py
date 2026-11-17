@@ -214,13 +214,16 @@ def load_config(path):
     if len(global_assets) != len(set(global_assets)) or not set(global_assets) <= set(GLOBAL_ASSETS):
         raise ValueError('invalid global assets')
     assets = config['primary_assets'] + additional + global_assets
-    ids=set(); urls=set()
+    ids=set(); urls={}
     for s in config['sources']:
         if not re.fullmatch(r'[a-z0-9_]+', s['id']):raise ValueError('invalid source ID')
         if s['id'] in ids:raise ValueError('duplicate source ID')
-        if s['url'] in urls:raise ValueError('duplicate source URL')
+        previous = urls.get(s['url'])
+        if previous and not (s['adapter'] == 'arzdigital_usdt' and previous == 'arzdigital_usdt'
+                             and s['url'] == 'https://lake.arzdigital.com/web/api/v1/pub/exchanges/pairs/top-pairs?limit=50&offset=0&base=tether&deprecated=false&exchange_country=IR'):
+            raise ValueError('duplicate source URL')
         ids.add(s['id'])
-        urls.add(s['url'])
+        urls[s['url']] = s['adapter']
         u=urlparse(s.get('url',''))
         if not u.hostname or u.username or u.password:raise ValueError('public source URL required')
         if s['adapter']=='tabdeal_depth':

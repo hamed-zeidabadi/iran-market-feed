@@ -570,6 +570,42 @@
       "note": "Comparison only: hourly channel posts; message time is the quote time; upstream and rate type not stated. Gram-gold line ignored (constant all day)."
     },
     {
+      "id": "arzdigital_nobitex",
+      "url": "https://lake.arzdigital.com/web/api/v1/pub/exchanges/pairs/top-pairs?limit=50&offset=0&base=tether&deprecated=false&exchange_country=IR",
+      "group": "nobitex",
+      "adapter": "arzdigital_usdt",
+      "enabled": true,
+      "reference_eligible": true,
+      "allow_snapshot_reference": true,
+      "asset_policies": {"usdt": {"max_age_seconds": 300}},
+      "assets": ["usdt"],
+      "note": "Fallback: Arzdigital spot bid/ask midpoint; updated_at is aggregator snapshot time. Shares Nobitex group."
+    },
+    {
+      "id": "arzdigital_ramzinex",
+      "url": "https://lake.arzdigital.com/web/api/v1/pub/exchanges/pairs/top-pairs?limit=50&offset=0&base=tether&deprecated=false&exchange_country=IR",
+      "group": "ramzinex",
+      "adapter": "arzdigital_usdt",
+      "enabled": true,
+      "reference_eligible": true,
+      "allow_snapshot_reference": true,
+      "asset_policies": {"usdt": {"max_age_seconds": 300}},
+      "assets": ["usdt"],
+      "note": "Fallback: Arzdigital spot bid/ask midpoint; updated_at is aggregator snapshot time. Shares Ramzinex group."
+    },
+    {
+      "id": "arzdigital_wallex",
+      "url": "https://lake.arzdigital.com/web/api/v1/pub/exchanges/pairs/top-pairs?limit=50&offset=0&base=tether&deprecated=false&exchange_country=IR",
+      "group": "wallex",
+      "adapter": "arzdigital_usdt",
+      "enabled": true,
+      "reference_eligible": true,
+      "allow_snapshot_reference": true,
+      "asset_policies": {"usdt": {"max_age_seconds": 300}},
+      "assets": ["usdt"],
+      "note": "Arzdigital spot bid/ask midpoint; updated_at is aggregator snapshot time. Shares Wallex group."
+    },
+    {
       "id": "ramzinex_usdt",
       "url": "https://publicapi.ramzinex.com/exchange/api/v1.0/exchange/orderbooks/11/buys_sells",
       "group": "ramzinex",

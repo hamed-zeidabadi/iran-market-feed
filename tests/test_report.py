@@ -56,7 +56,12 @@ class ReportTests(unittest.TestCase):
  def test_source_registry_unique(self):
   cfg=json.loads(Path('sources.json').read_text(encoding='utf-8'))
   self.assertEqual(len({s['id'] for s in cfg['sources']}),len(cfg['sources']))
-  self.assertEqual(len({s['url'] for s in cfg['sources']}),len(cfg['sources']))
+  shared=[s for s in cfg['sources'] if s['adapter']=='arzdigital_usdt']
+  self.assertEqual(len(shared),3)
+  self.assertEqual(len({s['url'] for s in shared}),1)
+  other=[s for s in cfg['sources'] if s['adapter']!='arzdigital_usdt']
+  self.assertEqual(len({s['url'] for s in other}),len(other))
+  self.assertNotIn(shared[0]['url'],{s['url'] for s in other})
  def test_json_serializable(self):
   json.dumps(build_report(config(),[quote('a')],[],NOW),allow_nan=False)
 if __name__=='__main__':unittest.main()

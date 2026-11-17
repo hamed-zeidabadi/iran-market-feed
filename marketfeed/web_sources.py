@@ -31,6 +31,46 @@ def add(out, source, asset, value, fetched, timestamp=None, **kwargs):
         pass
 
 
+def arzdigital_usdt(body, source, fetched):
+    data = json.loads(body, parse_float=Decimal)
+    if not isinstance(data, dict) or data.get('status') != 'success' or not isinstance(data.get('data'), list):
+        raise ValueError('invalid Arzdigital markets response')
+    rows = []
+    for row in data['data']:
+        if not isinstance(row, dict) or row.get('contract_type') != 'spot' or row.get('deprecated') is not False:
+            continue
+        src, base, quote_asset = row.get('source'), row.get('base'), row.get('quote')
+        if not all(isinstance(x, dict) for x in (src, base, quote_asset)):
+            continue
+        exchange = src.get('exchange')
+        if not isinstance(exchange, dict) or exchange.get('slug') != source['group']:
+            continue
+        if src.get('slug') != source['group'] + '-spot' or src.get('deprecated') is not False or exchange.get('deprecated') is not False:
+            continue
+        if base.get('slug') != 'tether' or base.get('symbol') != 'USDT' or quote_asset.get('slug') != 'ir-toman' or quote_asset.get('symbol') != 'IRT':
+            continue
+        rows.append(row)
+    if len(rows) != 1:
+        return []
+    row = rows[0]
+    try:
+        stamp = row['updated_at']
+        if type(stamp) is not int or not 1_000_000_000 <= stamp < 10_000_000_000:
+            return []
+        if isinstance(row['bid'], bool) or isinstance(row['ask'], bool):
+            return []
+        bid, ask = number(row['bid']), number(row['ask'])
+        if bid > ask:
+            return []
+        moment = datetime.fromtimestamp(stamp, UTC).isoformat()
+        out = []
+        add(out, source, 'usdt', (bid + ask) / 2, fetched, kind='midpoint',
+            time_basis='provider_snapshot', snapshot_at=moment)
+        return out
+    except (KeyError, TypeError, ValueError, OverflowError, OSError):
+        return []
+
+
 def tgju_snapshot(body, source, fetched):
     rows = json.loads(body)['current']
     if not isinstance(rows, dict):
@@ -686,7 +726,7 @@ def baha24(body, source, fetched):
     return list(latest.values())
 
 
-WEB_ADAPTERS = {'tgju_snapshot':tgju_snapshot, 'tgju_widget':tgju_widget,
+WEB_ADAPTERS = {'arzdigital_usdt':arzdigital_usdt, 'tgju_snapshot':tgju_snapshot, 'tgju_widget':tgju_widget,
                 'ordibehesht_gold':ordibehesht_gold, 'ordibehesht_page':ordibehesht_page, 'baazar_gold':baazar_gold,
                 'digikala_prices':digikala_prices, 'parasteh_gold':parasteh_gold,
                 'bazaretala_gold':bazaretala_gold,
