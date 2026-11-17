@@ -2,13 +2,14 @@ import argparse
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 import hashlib
+import http.cookiejar
 import json
 import os
 from pathlib import Path
 import random
 import re
 import time
-from urllib.request import Request, urlopen
+from urllib.request import Request, urlopen, build_opener, HTTPCookieProcessor, HTTPRedirectHandler
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlparse
 from websocket import create_connection, WebSocketException
@@ -26,6 +27,8 @@ def atomic_json(path, data):
 
 
 def read_source(source, timeout):
+    if source['adapter'] == 'digikala_prices':
+        return read_digikala(source['url'], timeout)
     if source['id'] in ('nobitex_usdt', 'ramzinex_usdt'):
         try:
             return read_https(source['url'], timeout)
@@ -73,6 +76,33 @@ def read_source(source, timeout):
             from .new_sources import TABDEAL_TRADES_URL
             return read_https(TABDEAL_TRADES_URL, timeout)
     return read_https(source['url'], timeout)
+
+
+def read_digikala(url, timeout):
+    """Keep challenge cookies for this request only, and reject cross-origin redirects."""
+    original = urlparse(url)
+    origin = (original.scheme, original.hostname, original.port)
+
+    class SameOriginRedirect(HTTPRedirectHandler):
+        def redirect_request(self, req, fp, code, msg, headers, newurl):
+            target = urlparse(newurl)
+            if (target.scheme, target.hostname, target.port) != origin:
+                return None
+            return super().redirect_request(req, fp, code, msg, headers, newurl)
+
+    opener = build_opener(HTTPCookieProcessor(http.cookiejar.CookieJar()), SameOriginRedirect())
+    request = Request(url, headers={'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json',
+                                    'Referer': 'https://www.digikala.com/'})
+    try:
+        with opener.open(request, timeout=timeout) as response:
+            raw = response.read(2_000_001)
+            if len(raw) > 2_000_000:
+                raise ValueError('response too large')
+            transport('direct_https', response.status)
+            return raw, response.status
+    except Exception as exc:
+        transport('direct_https', getattr(exc, 'code', None), exc)
+        raise
 
 
 def read_tabdeal_stream(source, timeout):
